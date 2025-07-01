@@ -1,0 +1,8 @@
+{
+    "tabWidth": 2,
+    "semi": true,
+    "singleQuote": true,
+    "arrowParens": "avoid",
+    "printWidth": 80,
+    "semicolons": true
+}
