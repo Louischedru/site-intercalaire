@@ -9,11 +9,18 @@ const upload = multer({ storage });
 
 carouselImageRouter.get('/:carouselId', controller.getCarousel);
 carouselImageRouter.put(
-  '/:carouselId',
+  '/create/:carouselId',
   auth,
   upload.single('file'),
   controller.create,
 );
-carouselImageRouter.delete('/:carouselId', auth, controller.deleteOne);
+carouselImageRouter.delete('/:id', auth, controller.deleteOne);
+carouselImageRouter.put('/modifyother/:id', auth, controller.modifyDesc);
+carouselImageRouter.put(
+  '/modifyimage/:id',
+  auth,
+  upload.single('file'),
+  controller.modifyImage,
+);
 
 export default carouselImageRouter;

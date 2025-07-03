@@ -7,9 +7,7 @@ import imageDescModel from '../models/imagedesc.model';
 dotenv.config();
 
 export async function create(req: Request, res: Response) {
-  console.log(req.body);
-  console.log('==============================================================');
-  const { desc, list } = req.body;
+  const { list } = req.params;
   const { buffer, originalname } = req.file || {
     buffer: undefined,
     originalname: undefined,
@@ -31,8 +29,10 @@ export async function create(req: Request, res: Response) {
 
     await imageDescModel.create({
       path: 'imagedesc/' + ref,
-      desc: desc,
-      list: list,
+      title: '',
+      desc: '',
+      list,
+      alt: '',
     });
     res.status(200).json({ message: 'ok' });
   } catch (error) {
@@ -46,7 +46,13 @@ export async function getList(req: Request, res: Response) {
 
   try {
     const items = await imageDescModel.findAll({ where: { list: list } });
-    const toSend = [] as { id: number; url: string; desc: string }[];
+    const toSend = [] as {
+      id: number;
+      url: string;
+      desc: string;
+      title: string;
+      alt: string;
+    }[];
 
     items.forEach(i => {
       const decoded = i.toJSON();
@@ -55,6 +61,8 @@ export async function getList(req: Request, res: Response) {
         id: decoded.id,
         url: `${process.env.HOST}/files/${decoded.path}`,
         desc: decoded.desc,
+        title: decoded.title,
+        alt: decoded.alt,
       });
     });
 
@@ -65,11 +73,11 @@ export async function getList(req: Request, res: Response) {
 }
 
 export async function modifyDesc(req: Request, res: Response) {
-  const { desc } = req.body;
+  const { desc, title, alt } = req.body;
   const { id } = req.params;
 
   try {
-    await imageDescModel.update({ desc: desc }, { where: { id: id } });
+    await imageDescModel.update({ desc, title, alt }, { where: { id: id } });
     res.status(200).json({ message: 'image desc modified' });
   } catch (error) {
     res.status(400).json(error);
@@ -78,7 +86,6 @@ export async function modifyDesc(req: Request, res: Response) {
 
 export async function modifyImage(req: Request, res: Response) {
   const { id } = req.params;
-  const { desc, list } = req.body;
   const { buffer, originalname } = req.file || {
     buffer: undefined,
     originalname: undefined,

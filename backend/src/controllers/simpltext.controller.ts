@@ -5,8 +5,6 @@ export async function update(req: Request, res: Response) {
   const { itemkey } = req.params;
   const { data } = req.body;
 
-  console.log('Request: ', itemkey, ' ', data);
-
   try {
     await simpleTextModel.update(
       { data: data },
@@ -44,7 +42,7 @@ export async function create(req: Request, res: Response) {
 
 export async function getAll(req: Request, res: Response) {
   try {
-    const texts = await simpleTextModel.findAll({ attributes: ["itemKey"] });
+    const texts = await simpleTextModel.findAll({ attributes: ['itemKey'] });
     res.status(200).json({ texts });
   } catch (error) {
     res.status(400).json(error);

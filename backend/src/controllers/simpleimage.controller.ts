@@ -10,6 +10,7 @@ export async function create(req: Request, res: Response) {
     await simpleImageModel.create({
       itemKey: itemKey,
       path: 'images/default-image.jpg',
+      alt: 'default image',
     });
     res.status(200).json({ message: 'Simple image created' });
   } catch (error) {
@@ -59,14 +60,27 @@ export async function update(req: Request, res: Response) {
   }
 }
 
+export async function upadateAlt(req: Request, res: Response) {
+  const { alt } = req.body;
+  const { itemKey } = req.params;
+  try {
+    await simpleImageModel.update({ alt }, { where: { itemKey } });
+    res.status(200).json({ message: 'Simple image alt modified' });
+  } catch (error) {
+    res.status(400).json(error);
+  }
+}
+
 export async function getOne(req: Request, res: Response) {
   try {
     const { itemKey } = req.params;
     const item = await simpleImageModel.findByPk(itemKey);
+    const decoded = item?.toJSON();
 
-    res
-      .status(200)
-      .json({ url: `${process.env.HOST}/files/${item?.toJSON().path}` });
+    res.status(200).json({
+      url: `${process.env.HOST}/files/${decoded.path}`,
+      alt: decoded.alt,
+    });
   } catch (error) {
     res.status(404).json(error);
   }

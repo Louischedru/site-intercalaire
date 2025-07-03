@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import CredentialModel from '../models/credentials.controller';
+import CredentialModel from '../models/credentials.model';
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
@@ -18,7 +18,7 @@ export function signup(req: Request, res: Response) {
         password: hash,
       })
         .then(() => {
-          res.status(200).json('Credentials created');
+          res.status(200).json({ message: 'Credentials created' });
           //   EmployeeModel.create({
           //     email: req.body.email,
           //     name: req.body.name,

@@ -7,6 +7,6 @@ const simpleTextRouter = Router();
 simpleTextRouter.put('/:itemkey', authMidddleware, simpleTextController.update);
 simpleTextRouter.get('/:itemkey', simpleTextController.getOne);
 simpleTextRouter.post('/', simpleTextController.create);
-simpleTextRouter.get("/", simpleTextController.getAll);
+simpleTextRouter.get('/', simpleTextController.getAll);
 
 export default simpleTextRouter;

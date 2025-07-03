@@ -1,9 +1,10 @@
 import { DataTypes } from 'sequelize';
 import { sq } from '../config/db';
 
-const simpleImageModel = sq.define('simpleimage', {
-  itemKey: {
-    type: DataTypes.STRING,
+const articleimageModel = sq.define('articleimage', {
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
     primaryKey: true,
     allowNull: false,
     unique: true,
@@ -18,8 +19,8 @@ const simpleImageModel = sq.define('simpleimage', {
   },
 });
 
-simpleImageModel.sync().then(() => {
-  console.log('Simple image model created');
+articleimageModel.sync().then(() => {
+  console.log('article image model created');
 });
 
-export default simpleImageModel;
+export default articleimageModel;

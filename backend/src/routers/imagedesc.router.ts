@@ -7,8 +7,13 @@ const imageDescRouter = Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
 imageDescRouter.get('/:list', controller.getList);
-imageDescRouter.post('/', auth, upload.single('file'), controller.create);
-imageDescRouter.put('/modifydesc:id', auth, controller.modifyDesc);
+imageDescRouter.put(
+  '/create/:list',
+  auth,
+  upload.single('file'),
+  controller.create,
+);
+imageDescRouter.put('/modifyother/:id', auth, controller.modifyDesc);
 imageDescRouter.put(
   '/modifyimage/:id',
   auth,

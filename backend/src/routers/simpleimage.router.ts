@@ -9,7 +9,12 @@ const simpleImageRouter = Router();
 
 simpleImageRouter.get('/:itemKey', controller.getOne);
 simpleImageRouter.post('/', auth, controller.create);
-simpleImageRouter.put('/:itemKey', upload.single('file'), controller.update);
+simpleImageRouter.put(
+  '/image/:itemKey',
+  upload.single('file'),
+  controller.update,
+);
 simpleImageRouter.get('/', controller.getAll);
+simpleImageRouter.put('/alt/:itemKey', auth, controller.upadateAlt);
 
 export default simpleImageRouter;
