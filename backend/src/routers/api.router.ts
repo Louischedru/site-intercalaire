@@ -5,6 +5,9 @@ import loginTestRouter from './logintest.router';
 import simpleImageRouter from './simpleimage.router';
 import carouselImageRouter from './carouselimage.router';
 import imageDescRouter from './imagedesc.router';
+import articleimageRouter from './articleimage.router';
+import filmarticleRouter from './filmarticle.router';
+import shortInfoRouter from './shortinfo.routeer';
 
 const apiRouter = Router();
 
@@ -14,5 +17,8 @@ apiRouter.use('/logintest', loginTestRouter);
 apiRouter.use('/simpleimage', simpleImageRouter);
 apiRouter.use('/carousel', carouselImageRouter);
 apiRouter.use('/imagedesc', imageDescRouter);
+apiRouter.use('/filmarticle', filmarticleRouter);
+apiRouter.use('/articleimage', articleimageRouter);
+apiRouter.use('/shortinfo', shortInfoRouter);
 
 export default apiRouter;

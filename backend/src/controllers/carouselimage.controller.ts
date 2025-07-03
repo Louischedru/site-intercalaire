@@ -26,7 +26,7 @@ export async function create(req: Request, res: Response) {
 
     await carouselImageModel.create({
       carouselId,
-      alt: '',
+      alt: 'Texte alt',
       path: 'carousels/' + ref,
     });
 
@@ -123,17 +123,17 @@ export async function modifyImage(req: Request, res: Response) {
     const item = await carouselImageModel.findByPk(id);
     const decoded = item?.toJSON();
 
-    if (decoded.path && decoded.path != 'default-image.jpg') {
+    if (decoded.path) {
       fs.unlink('files/' + decoded.path, error => {
         if (error) console.log(error);
       });
     }
     await sharp(buffer)
       .webp({ quality: 20 })
-      .toFile('files/imagedesc/' + ref);
+      .toFile('files/carousels/' + ref);
 
     await carouselImageModel.update(
-      { path: 'imagedesc/' + ref },
+      { path: 'carousels/' + ref },
       { where: { id: id } },
     );
 

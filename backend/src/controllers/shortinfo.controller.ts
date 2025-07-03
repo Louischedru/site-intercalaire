@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import simpleTextModel from '../models/simpletext.model';
+import simpleTextModel from '../models/shortinfo.model';
 
 export async function update(req: Request, res: Response) {
   const { itemKey } = req.params;

@@ -4,8 +4,8 @@ import authMidddleware from '../middlewares/auth.middleware';
 
 const simpleTextRouter = Router();
 
-simpleTextRouter.put('/:itemkey', authMidddleware, simpleTextController.update);
-simpleTextRouter.get('/:itemkey', simpleTextController.getOne);
+simpleTextRouter.put('/:itemKey', authMidddleware, simpleTextController.update);
+simpleTextRouter.get('/:itemKey', simpleTextController.getOne);
 simpleTextRouter.post('/', simpleTextController.create);
 simpleTextRouter.get('/', simpleTextController.getAll);
 
