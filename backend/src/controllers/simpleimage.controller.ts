@@ -2,6 +2,9 @@ import { Request, Response } from 'express';
 import simpleImageModel from '../models/simpleimage.model';
 import fs from 'fs';
 import sharp from 'sharp';
+import path from 'path';
+
+const filePath = path.join('files', 'simple-images');
 
 export async function create(req: Request, res: Response) {
   const { itemKey } = req.body;
@@ -9,7 +12,7 @@ export async function create(req: Request, res: Response) {
   try {
     await simpleImageModel.create({
       itemKey: itemKey,
-      path: 'images/default-image.jpg',
+      path: path.join('files', 'default-image.jpg'),
       alt: 'default image',
     });
     res.status(200).json({ message: 'Simple image created' });
