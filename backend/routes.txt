@@ -1,0 +1,173 @@
+========== /api/auth
+
+POST /api/auth/login
+body: {username, password}
+response: {userId, token}
+
+POST /api/auth/sign
+body: {username, password}
+response: 200 {message}
+
+========== /api/logintest
+
+GET /api/logintest
+body: {}
+response: 200 {message}
+
+========== /api/carousel
+
+GET /api/carousel/:carouselId
+body: {}
+response: 200 {id, alt, url, title?, desc?, color?}[]
+
+PUT /api/carousel/create/:carouselId
+body: {} file: "file"
+response: 200 {message}
+
+PUT /api/carousel/modifyother/:id
+body: {alt, title?, url?, desc?, color?}
+response: 200 {message}
+
+PUT /api/carousel/modifyimage/:id
+body: {} file: "file"
+response: 200 {message}
+
+DELETE /api/carousel/:id
+body: {}
+response: 200 {message}
+
+========== /api/simpleimage
+
+GET /api/simpleimage/:itemKey
+body: {}
+response: 200 {url, alt}
+
+GET /api/simpleimage
+body: {}
+response: {itemKey, path, alt}
+
+POST /api/simpleimage
+body: {itemKey}
+response: 200 {message}
+
+PUT /api/simpleimage/image/:itemKey
+body: {} file: "file"
+response: 200 {message}
+
+PUT /api/simpleimage/alt/:itemKey
+body: {alt}
+response: 200 {message}
+
+========== /api/imagedesc
+
+GET /api/imagedesc/:list
+body: {}
+response: 200 {id, url, desc, title, alt}
+
+PUT /api/imagedesc/create/:list
+body: {}, file: "file"
+response: 200 {message}
+
+PUT /api/imagedesc/modifyother/:id
+body: {desc, title, alt}
+response: 200 {message}
+
+PUT /api/imagedesc/modifyimage/:id
+body: {} file: "file"
+response: 200 {message}
+
+DELETE /api/imagedesc/:id
+body: {}
+response: 200 {message}
+
+========== /api/simpletext
+
+GET /api/simpletext
+body: {}
+response: 200 {itemKey, data}[]
+
+GET /api/simpletext/:itemKey
+body: {}
+response: 200 {itemKey, data}
+
+POST /api/simpletext
+body: {itemKey, data}
+response: 200 {message}
+
+PUT /api/simpletext/:itemKey
+body: {data}
+response: 200 {message}
+
+========== /api/shortinfo
+
+GET /api/shortinfo
+body: {}
+response: 200 {itemKey, data}[]
+
+GET /api/shortinfo/:itemKey
+body: {}
+response: 200 {itemKey, data}
+
+POST /api/shortinfo
+body: {itemKey, data}
+response: 200 {message}
+
+PUT /api/shortinfo/:itemKey
+body: {data}
+response: 200 {message}
+
+========== /api/filmarticle
+
+GET /api/filmarticle/published/:page
+body: {}
+response: 200 {poster, title, desc, id}
+
+GET /api/filmarticle/drafts/:page
+body: {}
+response: 200 {poster, title, desc, id}
+
+GET /api/filmarticle/onepublic/:id
+body: {}
+response: 200 {poster, title, desc, article, synopsis?, info?, url?}
+
+GET /api/filmarticle/oneprivate/:id
+body: {}
+response: 200 {poster, title, desc, article, synopsis?, info?, url?}
+
+POST /api/filmarticle/
+body: {title, desc, article, page, synopsis?, info?, url?}
+response: 200 {id}
+
+PUT /api/filmarticle/poster/:id
+body: {} file: "file"
+response: 200 {message}
+
+PUT /api/filmarticle/other/:id
+body: {title, desc, article, page, synopsis?, info?, url?}
+response: 200 {message}
+
+PUT: /api/filmarticle/setpublished/:id
+body: {published}
+response: 200 {message}
+
+DELETE /api/filmarticle/:id
+body: {}
+response: 200 {message}
+
+========== /api/articleimage
+
+GET /api/articleimage/:id
+body: {}
+response: 200 {url, alt}
+
+POST /api/articleimage/
+body: {} file: "file"
+response: 200 {id}
+
+PUT /api/articleimage/:id
+body: {alt}
+response: 200 (message)
+
+DELETE /api/articleimage/:id
+body: {}
+response: 200 {message}
