@@ -85,7 +85,7 @@ export async function deleteOne(req: Request, res: Response) {
     };
 
     fs.unlink(path.join(filePath, decoded.path), error => {
-      if (error) throw error;
+      if (error) console.log(error);
     });
     await carouselImageModel.destroy({
       where: { id },
@@ -102,6 +102,7 @@ export async function modifyDesc(req: Request, res: Response) {
   const { id } = req.params;
 
   try {
+    if (!(await carouselImageModel.findByPk(id))) throw 'not found';
     await carouselImageModel.update(
       { desc, title, alt, url, color },
       { where: { id: id } },
@@ -124,13 +125,16 @@ export async function modifyImage(req: Request, res: Response) {
 
   try {
     const item = await carouselImageModel.findByPk(id);
+
+    if (!item) throw 'not found';
+
     const decoded = item?.toJSON();
 
     if (!buffer) throw 'No file provided';
 
     if (decoded.path) {
       fs.unlink(path.join(filePath, decoded.path), error => {
-        if (error) throw error;
+        if (error) console.log(error);
       });
     }
     await sharp(buffer).webp({ quality: 20 }).toFile(path.join(filePath, ref));
