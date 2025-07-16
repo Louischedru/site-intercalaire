@@ -1,10 +1,11 @@
 import { Request, Response } from 'express';
 import fs from 'fs';
 import sharp from 'sharp';
-import dotenv from 'dotenv';
 import imageDescModel from '../models/imagedesc.model';
+import path from 'path';
 
-dotenv.config();
+const folderName = 'imagedescs';
+const filePath = path.join('files', folderName);
 
 export async function create(req: Request, res: Response) {
   const { list } = req.params;
@@ -18,17 +19,16 @@ export async function create(req: Request, res: Response) {
   fs.access('files', error => {
     if (error) fs.mkdirSync('files');
   });
-  fs.access('files/imagedesc', error => {
-    if (error) fs.mkdirSync('files/imagedesc');
+  fs.access(filePath, error => {
+    if (error) fs.mkdirSync(filePath);
   });
 
   try {
-    await sharp(buffer)
-      .webp({ quality: 20 })
-      .toFile('files/imagedesc/' + ref);
+    if (!buffer) throw 'No file provided';
+    await sharp(buffer).webp({ quality: 20 }).toFile(path.join(filePath, ref));
 
     await imageDescModel.create({
-      path: 'imagedesc/' + ref,
+      path: ref,
       title: '',
       desc: '',
       list,
@@ -36,7 +36,7 @@ export async function create(req: Request, res: Response) {
     });
     res.status(200).json({ message: 'ok' });
   } catch (error) {
-    res.status(400).json(error);
+    res.status(400).json({ error });
     console.log(error);
   }
 }
@@ -59,7 +59,7 @@ export async function getList(req: Request, res: Response) {
 
       toSend.push({
         id: decoded.id,
-        url: `${process.env.HOST}/files/${decoded.path}`,
+        url: `${process.env.HOST}/files/${folderName}/${decoded.path}`,
         desc: decoded.desc,
         title: decoded.title,
         alt: decoded.alt,
@@ -68,7 +68,7 @@ export async function getList(req: Request, res: Response) {
 
     res.status(200).json(toSend);
   } catch (error) {
-    res.status(400).json(error);
+    res.status(400).json({ error });
   }
 }
 
@@ -77,10 +77,11 @@ export async function modifyDesc(req: Request, res: Response) {
   const { id } = req.params;
 
   try {
+    if (!(await imageDescModel.findByPk(id))) throw 'Not found';
     await imageDescModel.update({ desc, title, alt }, { where: { id: id } });
     res.status(200).json({ message: 'image desc modified' });
   } catch (error) {
-    res.status(400).json(error);
+    res.status(400).json({ error });
   }
 }
 
@@ -95,25 +96,19 @@ export async function modifyImage(req: Request, res: Response) {
 
   try {
     const item = await imageDescModel.findByPk(id);
+    if (!item) throw 'Not found';
     const decoded = item?.toJSON();
 
-    if (decoded.path && decoded.path) {
-      fs.unlink('files/' + decoded.path, error => {
-        if (error) console.log(error);
-      });
-    }
-    await sharp(buffer)
-      .webp({ quality: 20 })
-      .toFile('files/imagedesc/' + ref);
+    fs.unlink(path.join(filePath, decoded.path), error => {
+      if (error) console.log(error);
+    });
+    await sharp(buffer).webp({ quality: 20 }).toFile(path.join(filePath, ref));
 
-    await imageDescModel.update(
-      { path: 'imagedesc/' + ref },
-      { where: { id: id } },
-    );
+    await imageDescModel.update({ path: ref }, { where: { id: id } });
 
     res.status(200).json({ message: 'image updated' });
   } catch (error) {
-    res.status(400).json(error);
+    res.status(400).json({ error });
   }
 }
 
@@ -123,7 +118,7 @@ export async function deleteOne(req: Request, res: Response) {
   try {
     const item = (await imageDescModel.findByPk(id))?.toJSON();
     if (item.path) {
-      fs.unlink('files/' + item.path, error => {
+      fs.unlink(path.join(filePath, item.path), error => {
         if (error) console.log(error);
       });
     }
