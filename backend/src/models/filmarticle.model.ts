@@ -45,6 +45,10 @@ const filmarticleModel = sq.define('filmarticle', {
     type: DataTypes.BOOLEAN,
     allowNull: false,
   },
+  images: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
 });
 
 filmarticleModel.sync().then(() => {
