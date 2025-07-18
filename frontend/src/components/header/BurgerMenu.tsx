@@ -1,9 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose } from '@fortawesome/free-solid-svg-icons';
 import { Link, To } from 'react-router-dom';
-import logo from '../../assets/logo/logo_horizontal_blanc.png';
-import { screenSizes } from '../../utils';
-import { useState } from 'react';
+import logo from '../../assets/logo/interprod.png';
 
 interface Props {
   show: boolean;
@@ -11,7 +9,6 @@ interface Props {
 }
 
 export default function BurgerMenu({ show, setShow }: Props) {
-  const [isXl, setIsXl] = useState(false);
   return (
     <div
       className={`fixed top-0 bottom-0 overflow-scroll left-0 w-screen h-screen bg-black bg-opacity-90 z-30 ${show ? 'translate-x-0' : 'translate-x-full'}`}
