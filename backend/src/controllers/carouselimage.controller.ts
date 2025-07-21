@@ -44,10 +44,12 @@ export async function getCarousel(req: Request, res: Response) {
   const result = [] as {
     id: number;
     url: string;
+    image: string;
     alt: string;
     title: string;
     desc: string;
     color: string;
+    textColor: string;
   }[];
 
   try {
@@ -59,11 +61,13 @@ export async function getCarousel(req: Request, res: Response) {
       const decoded = i.toJSON();
       result.push({
         id: decoded.id,
-        url: `${process.env.HOST}/files/${folderName}/${decoded.path}`,
+        image: `${process.env.HOST}/files/${folderName}/${decoded.path}`,
         alt: decoded.alt,
         title: decoded.title,
         desc: decoded.desc,
         color: decoded.color,
+        url: decoded.url,
+        textColor: decoded.textColor,
       });
     });
 
@@ -98,13 +102,13 @@ export async function deleteOne(req: Request, res: Response) {
 }
 
 export async function modifyDesc(req: Request, res: Response) {
-  const { desc, title, alt, url, color } = req.body;
+  const { desc, title, alt, url, color, textColor } = req.body;
   const { id } = req.params;
 
   try {
     if (!(await carouselImageModel.findByPk(id))) throw 'not found';
     await carouselImageModel.update(
-      { desc, title, alt, url, color },
+      { desc, title, alt, url, color, textColor },
       { where: { id: id } },
     );
     res.status(200).json({ message: 'carousel image modified' });

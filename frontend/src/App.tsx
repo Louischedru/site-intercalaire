@@ -3,17 +3,22 @@ import DevInterface from './pages/DevInterface';
 import Auth from './pages/Auth';
 import Home from './pages/Home';
 
-import Layout from './components/Layout';
+import MainLayout from './pages/layout';
+import AdminLayout from './pages/admin/layout';
+import CarouselModify from './pages/admin/CarouselModify';
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route element={<Layout />}>
+        <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
         </Route>
+        <Route element={<AdminLayout />} path="/admin">
+          <Route path="/admin//dev" element={<DevInterface />} />
+          <Route path="/admin/carousel" element={<CarouselModify />} />
+        </Route>
         <Route path="/auth" element={<Auth />} />
-        <Route path="/dev" element={<DevInterface />} />
       </Routes>
     </Router>
   );

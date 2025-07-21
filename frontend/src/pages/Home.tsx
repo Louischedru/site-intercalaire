@@ -1,7 +1,9 @@
+import HomeCarousel from '../components/home/HomeCarousel';
+
 export default function Home() {
   return (
     <>
-      <h2>Hello world!</h2>
+      <HomeCarousel />
     </>
   );
 }

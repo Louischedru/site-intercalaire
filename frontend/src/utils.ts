@@ -4,7 +4,7 @@ import axios from 'axios';
 const APIURL = 'http://192.168.1.12:8080/api/';
 
 export const screenSizes = {
-  xs: 640,
+  sm: 640,
   md: 768,
   lg: 1024,
   xl: 1280,
@@ -22,35 +22,22 @@ export function atos(a: Array<string>) {
 
 interface RequestOptions {
   route: string;
-  body?: object | FormData;
-  method?: string;
-  contentType?: string;
-  raw?: boolean;
+  body?: object;
+  method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
 }
 
-export async function fetchAPI({
-  route,
-  body,
-  method,
-  contentType,
-  raw,
-}: RequestOptions) {
+export async function fetchAPI({ route, body, method }: RequestOptions) {
   const authorization = Cookies.get('authorization');
   const response = await fetch(APIURL + route, {
     method: method || 'GET',
     headers: {
-      'Content-Type': contentType || 'application/json',
+      'Content-Type': 'application/json',
       authorization: authorization || '',
     },
-    body: JSON.stringify(body),
+    body: body ? JSON.stringify(body) : undefined,
   });
 
-  if (!raw) {
-    if (!response.ok) throw new Error(response.statusText);
-    return await response.json();
-  } else {
-    return response;
-  }
+  return response;
 }
 
 export async function fetchAPIFormData(params: RequestOptions, fd: FormData) {

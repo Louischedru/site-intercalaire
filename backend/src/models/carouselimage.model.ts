@@ -37,6 +37,10 @@ const carouselImageModel = sq.define('carouselimage', {
     type: DataTypes.TEXT,
     allowNull: false,
   },
+  textColor: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
 });
 
 carouselImageModel.sync().then(() => {
