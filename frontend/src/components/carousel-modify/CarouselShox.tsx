@@ -8,7 +8,8 @@ let key = 0;
 
 interface Props {
   images: CarouselInterface[];
-  getImages: () => void;
+  imageId: number;
+  setImageId: (n: number) => void;
 }
 export default function CarouselShow(props: Props) {
   const responsive = {
@@ -33,8 +34,13 @@ export default function CarouselShow(props: Props) {
   return (
     <div>
       <Carousel responsive={responsive}>
-        <button className="w-full h-full text-5xl bg-ip-blue text-white">
-          <FontAwesomeIcon icon={faPlus} />
+        <button
+          className={`p-3 h-full w-full ${props.imageId == -1 && 'border-4 bg-ip-blue'}`}
+          onClick={() => props.setImageId(-1)}
+        >
+          <div className="w-full h-full text-5xl bg-ip-blue text-white flex items-center justify-center">
+            <FontAwesomeIcon icon={faPlus} />
+          </div>
         </button>
         {props.images.map(i => {
           key++;
@@ -42,7 +48,8 @@ export default function CarouselShow(props: Props) {
             <DeletableImage
               image={i}
               key={`carouselshow-${key}`}
-              getImages={props.getImages}
+              isSelected={i.id == props.imageId}
+              setImageId={props.setImageId}
             />
           );
         })}
@@ -53,17 +60,18 @@ export default function CarouselShow(props: Props) {
 
 function DeletableImage({
   image,
-  getImages,
+  setImageId,
+  isSelected,
 }: {
   image: CarouselInterface;
-  getImages: () => void;
+  isSelected: boolean;
+  setImageId: (n: number) => void;
 }) {
-  const deleteImage = async () => {
-    getImages();
-  };
-
   return (
-    <div className="relative p-3 hover:bg-gray-light flex justify-center items-center">
+    <div
+      className={`p-3 hover:bg-gray-light flex justify-center items-center ${isSelected && 'border-4 bg-ip-blue'}`}
+      onClick={() => setImageId(image.id)}
+    >
       <img src={image.image} alt="" className="" />
     </div>
   );

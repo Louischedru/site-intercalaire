@@ -1,15 +1,20 @@
-import { ChangeEvent } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 
 interface Props {
   name: string;
   value: string;
   onChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
+  id: string;
 }
 
 export default function TextArea(props: Props) {
+  const [newValue, setNewValue] = useState(props.value);
+  useEffect(() => {
+    setNewValue(props.value);
+  }, [props.value]);
   return (
     <div>
-      <label className="block font-bold mb-3" htmlFor={props.name}>
+      <label className="block font-bold mb-3" htmlFor={props.id}>
         {props.name}
       </label>
       <textarea
@@ -17,8 +22,10 @@ export default function TextArea(props: Props) {
         name={props.name}
         rows={5}
         onChange={props.onChange}
+        id={props.id}
+        onClick={() => console.log(props.value)}
       >
-        {props.value}
+        {newValue}
       </textarea>
     </div>
   );

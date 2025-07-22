@@ -14,6 +14,12 @@ export default function CarouselModify() {
   const [page, setPage] = useState('home');
   const [alt, setAlt] = useState('');
   const [url, setUrl] = useState('');
+  const [imageId, setImageId] = useState(-1);
+
+  const modifyImage = async () => {
+    const response = await carouselCalls.modifyOther(imageId, { alt, url });
+    console.log(response);
+  };
 
   const submitImage = async () => {
     let id = -1;
@@ -63,11 +69,30 @@ export default function CarouselModify() {
     getImages2();
   }, [page]);
 
+  useEffect(() => {
+    let element = undefined as carouselCalls.CarouselInterface | undefined;
+
+    for (let i = 0; i < images.length; i++)
+      if (images[i].id == imageId) {
+        element = images[i];
+        break;
+      }
+
+    setAlt(element?.alt || '');
+    setUrl(element?.url || '');
+
+    const altElement =
+      document.getElementById('alt') || document.createElement('textarea');
+    const urlElement =
+      document.getElementById('url') || document.createElement('textarea');
+    altElement.value = element?.alt || '';
+    urlElement.value = element?.url || '';
+  }, [imageId, images]);
+
   return (
     <>
       <div className="p-10">
-        <CarouselShow images={images} getImages={getImages} />
-        <div className="flex justify-center pt-10">
+        <div className="flex justify-center pb-10">
           <div className="flex border border-[#bababa] w-1/3">
             <button
               className="disabled:bg-[#196bd0] disabled:text-[#ffffff] p-3 font-extrabold w-1/2"
@@ -85,13 +110,20 @@ export default function CarouselModify() {
             </button>
           </div>
         </div>
+
+        <CarouselShow
+          images={images}
+          setImageId={setImageId}
+          imageId={imageId}
+        />
         <div className="mt-10">
           <form
             action=""
             onSubmit={(e: React.FormEvent) => {
               e.preventDefault();
               const doStuff = async () => {
-                await submitImage();
+                if (imageId == -1) await submitImage();
+                else await modifyImage();
                 await getImages();
                 setInputValue('');
               };
@@ -119,6 +151,7 @@ export default function CarouselModify() {
                   name="Texte alternatif"
                   value={alt}
                   onChange={e => setAlt(e.currentTarget.value)}
+                  id="alt"
                 />
               </div>
               <div>
@@ -126,6 +159,7 @@ export default function CarouselModify() {
                   value={url}
                   onChange={e => setUrl(e.currentTarget.value)}
                   name="URL de redirection"
+                  id="url"
                 />
               </div>
             </div>

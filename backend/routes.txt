@@ -18,14 +18,14 @@ response: 200 {message}
 
 GET /api/carousel/:carouselId
 body: {}
-response: 200 {id, alt, url, title?, desc?, color?}[]
+response: 200 {id, alt, image, url?, title?, desc?, color?, textColor?}[]
 
 PUT /api/carousel/create/:carouselId
 body: {} file: "file"
-response: 200 {message}
+response: 200 {id}
 
 PUT /api/carousel/modifyother/:id
-body: {alt, title?, url?, desc?, color?}
+body: {alt, title?, url?, desc?, color?, textColor?}
 response: 200 {message}
 
 PUT /api/carousel/modifyimage/:id
