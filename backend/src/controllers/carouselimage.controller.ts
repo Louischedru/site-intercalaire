@@ -27,13 +27,13 @@ export async function create(req: Request, res: Response) {
     if (!buffer) throw 'No file provided';
     await sharp(buffer).webp({ quality: 20 }).toFile(path.join(filePath, ref));
 
-    await carouselImageModel.create({
+    const item = await carouselImageModel.create({
       carouselId,
       alt: 'Texte alt',
       path: ref,
     });
 
-    res.status(200).json({ message: 'Carousel image updated' });
+    res.status(200).json({ id: item.toJSON().id });
   } catch (error) {
     res.status(400).json({ error });
   }

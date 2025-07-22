@@ -51,17 +51,17 @@ export async function create(carousselId: string, file?: File) {
 }
 
 export async function modifyOther(
-  carouselId: string,
+  id: number,
   body: {
     alt: string;
-    title: string;
-    url: string;
-    color: string;
-    textColor: string;
+    title?: string;
+    url?: string;
+    color?: string;
+    textColor?: string;
   },
 ) {
   const response = await fetchAPI({
-    route: 'carousel/modifyother/' + carouselId,
+    route: `carousel/modifyother/${id}`,
     method: 'PUT',
     body,
   });

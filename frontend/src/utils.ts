@@ -42,11 +42,19 @@ export async function fetchAPI({ route, body, method }: RequestOptions) {
 
 export async function fetchAPIFormData(params: RequestOptions, fd: FormData) {
   const post = async () => {
-    return await axios.post(APIURL + params.route, fd);
+    return await axios.post(APIURL + params.route, fd, {
+      headers: {
+        authorization: Cookies.get('authorization'),
+      },
+    });
   };
 
   const put = async () => {
-    return await axios.put(APIURL + params.route, fd);
+    return await axios.put(APIURL + params.route, fd, {
+      headers: {
+        authorization: Cookies.get('authorization'),
+      },
+    });
   };
 
   try {
@@ -76,7 +84,7 @@ export enum DisplayTypes {
 }
 
 export async function loginTest(stateSetter: (b: boolean) => void) {
-  const response = await fetchAPI({ route: 'logintest', raw: true });
+  const response = await fetchAPI({ route: 'logintest' });
 
   axios.defaults.headers.common = {
     authorization: Cookies.get('authorization') || '',

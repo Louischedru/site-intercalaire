@@ -1,49 +1,73 @@
 import { useState, useEffect } from 'react';
 import * as carouselCalls from '../../api-calls/Carousel';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import FileInput from '../../components/forms/FileInput';
 import TextArea from '../../components/forms/TextArea';
 import TextInput from '../../components/forms/TextInput';
-
-const keyName = 'caroussel-images-modify';
-let key = 0;
+import SubmitInput from '../../components/forms/SubmitInput';
+import CarouselShow from '../../components/carousel-modify/CarouselShox';
 
 export default function CarouselModify() {
   const [loading, setLoading] = useState(false);
   const [currentData, setCurrentData] = useState<File>();
-  const [images, setImages] = useState<{ id: number; url: string }[]>([]);
+  const [images, setImages] = useState<carouselCalls.CarouselInterface[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [page, setPage] = useState('home');
   const [alt, setAlt] = useState('');
   const [url, setUrl] = useState('');
 
   const submitImage = async () => {
+    let id = -1;
+    console.log(currentData);
+    console.log(alt);
+    console.log(url);
     setLoading(true);
     try {
-      await carouselCalls.create(page, currentData);
+      const response = await carouselCalls.create(page, currentData);
+      console.log(response);
+      const data = response?.data as { id: number };
+      id = data.id;
       setCurrentData(undefined);
     } catch (error) {
       console.log(error);
+      setLoading(false);
+    }
+    try {
+      const response = await carouselCalls.modifyOther(id, { alt, url });
+      console.log(response);
+      setUrl('');
+      setAlt('');
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
     }
   };
 
   const getImages = async () => {
     try {
-      setImages(await carouselCalls.getOne('home'));
+      setImages(await carouselCalls.getOne(page));
     } catch (error) {
       console.log(error);
     }
   };
 
   useEffect(() => {
-    getImages();
-  }, []);
+    const getImages2 = async () => {
+      try {
+        setImages(await carouselCalls.getOne(page));
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    getImages2();
+  }, [page]);
 
   return (
     <>
       <div className="p-10">
-        <div className="flex justify-center">
+        <CarouselShow images={images} getImages={getImages} />
+        <div className="flex justify-center pt-10">
           <div className="flex border border-[#bababa] w-1/3">
             <button
               className="disabled:bg-[#196bd0] disabled:text-[#ffffff] p-3 font-extrabold w-1/2"
@@ -105,53 +129,12 @@ export default function CarouselModify() {
                 />
               </div>
             </div>
-            <input
-              type="submit"
-              value="Envoyer"
-              className="bg-blue text-white p-2 text-xl w-full font-extrabold rounded-lg hover:bg-blue-dark cursor-pointer mr-1 mt-5"
-              disabled={loading}
-            />
-          </form>
-          <div className="flex justify-center">
-            <div className="grid grid-cols-2 overflow-y-scroll">
-              {images.map(i => {
-                key++;
-                return (
-                  <DeletableImage
-                    key={`${keyName}-${key}`}
-                    image={i}
-                    getImages={getImages}
-                  />
-                );
-              })}
+            <div className="flex justify-center mt-10">
+              <SubmitInput disabled={loading} />
             </div>
-          </div>
+          </form>
         </div>
       </div>
     </>
-  );
-}
-
-function DeletableImage({
-  image,
-  getImages,
-}: {
-  image: { id: number; url: string };
-  getImages: () => void;
-}) {
-  const deleteImage = async () => {
-    getImages();
-  };
-
-  return (
-    <div className="relative p-3 hover:bg-gray-light flex justify-center items-center">
-      <img src={image.url} alt="" className="" />
-      <button
-        onClick={() => deleteImage()}
-        className="absolute top-0 right-0 p-2 text-white"
-      >
-        <FontAwesomeIcon icon={faTrash} />
-      </button>
-    </div>
   );
 }

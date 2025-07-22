@@ -51,7 +51,7 @@ export default function Auth() {
           <input
             type="submit"
             value="Se connecter"
-            className="bg-blue text-white w-3/4 text-center  rounded p-2 cursor-pointer hover:bg-blue-dark"
+            className="bg-ip-blue text-white w-3/4 text-center  rounded p-2 cursor-pointer hover:bg-blue-dark"
           />
         </form>
       </div>
@@ -73,9 +73,11 @@ async function submitForm(
     method: 'POST',
   });
 
-  console.log(response);
-  if (response.token) {
-    Cookies.set('authorization', response.token, { sameSite: 'Lax' });
+  const body = await response.json();
+
+  console.log(body);
+  if (body.token) {
+    Cookies.set('authorization', body.token, { sameSite: 'Lax' });
     setIsLogged(true);
   }
 }
