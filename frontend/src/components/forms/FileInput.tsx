@@ -1,5 +1,6 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { ReactNode } from 'react';
 
 interface Props {
   name: string;
@@ -8,10 +9,10 @@ interface Props {
   value: string;
   type: 'image' | 'other';
   file?: File;
+  visualize?: ReactNode;
 }
 
 export default function FileInput(props: Props) {
-  const preview = props.file ? URL.createObjectURL(props.file) : null;
   return (
     <div className="">
       <div className="flex justify-center">
@@ -30,9 +31,7 @@ export default function FileInput(props: Props) {
           value={props.value}
         />
       </div>
-      <div className="">
-        {preview && <img className="max-h-64" src={preview} />}
-      </div>
+      <div className="">{props.visualize}</div>
     </div>
   );
 }

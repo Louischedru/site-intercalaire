@@ -5,20 +5,40 @@ import TextArea from '../../components/forms/TextArea';
 import TextInput from '../../components/forms/TextInput';
 import SubmitInput from '../../components/forms/SubmitInput';
 import CarouselShow from '../../components/carousel-modify/CarouselShox';
+import Visualizer from '../../components/carousel-modify/Visualizer';
 
 export default function CarouselModify() {
   const [loading, setLoading] = useState(false);
-  const [currentData, setCurrentData] = useState<File>();
   const [images, setImages] = useState<carouselCalls.CarouselInterface[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [page, setPage] = useState('home');
+  const [imageId, setImageId] = useState(-1);
+  const [areImagesLoaded, setAreImagesLoaded] = useState(false);
+  const [visualize, setVisualize] =
+    useState<carouselCalls.CarouselInterface | null>(null);
+
+  const [currentData, setCurrentData] = useState<File>();
   const [alt, setAlt] = useState('');
   const [url, setUrl] = useState('');
-  const [imageId, setImageId] = useState(-1);
+  const [title, setTitle] = useState('');
+  const [desc, setDesc] = useState('');
+  const [color, setColor] = useState('');
+  const [textColor, setTextColor] = useState('');
 
   const modifyImage = async () => {
-    const response = await carouselCalls.modifyOther(imageId, { alt, url });
-    console.log(response);
+    try {
+      const response = await carouselCalls.modifyOther(imageId, {
+        alt,
+        url,
+        title,
+        desc,
+        color,
+        textColor,
+      });
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const submitImage = async () => {
@@ -50,8 +70,12 @@ export default function CarouselModify() {
   };
 
   const getImages = async () => {
+    setAreImagesLoaded(false);
+    setImages([]);
+    setVisualize(null);
     try {
       setImages(await carouselCalls.getOne(page));
+      setAreImagesLoaded(true);
     } catch (error) {
       console.log(error);
     }
@@ -59,8 +83,12 @@ export default function CarouselModify() {
 
   useEffect(() => {
     const getImages2 = async () => {
+      setAreImagesLoaded(false);
+      setImages([]);
+      setVisualize(null);
       try {
         setImages(await carouselCalls.getOne(page));
+        setAreImagesLoaded(true);
       } catch (error) {
         console.log(error);
       }
@@ -80,13 +108,31 @@ export default function CarouselModify() {
 
     setAlt(element?.alt || '');
     setUrl(element?.url || '');
+    setTitle(element?.title || '');
+    setDesc(element?.desc || '');
+    setColor(element?.color || '');
+    setTextColor(element?.textColor || '');
 
     const altElement =
-      document.getElementById('alt') || document.createElement('textarea');
+      (document.getElementById('alt') as HTMLTextAreaElement) ||
+      document.createElement('textarea');
     const urlElement =
-      document.getElementById('url') || document.createElement('textarea');
+      (document.getElementById('url') as HTMLInputElement) ||
+      document.createElement('input');
+    const titleElement =
+      (document.getElementById('title') as HTMLInputElement) ||
+      document.createElement('input');
+    const colorElement =
+      (document.getElementById('color') as HTMLInputElement) ||
+      document.createElement('input');
+    const textColorElement =
+      (document.getElementById('text-color') as HTMLInputElement) ||
+      document.createElement('input');
     altElement.value = element?.alt || '';
     urlElement.value = element?.url || '';
+    titleElement.value = element?.title || '';
+    colorElement.value = element?.color || '';
+    textColorElement.value = element?.textColor || '';
   }, [imageId, images]);
 
   return (
@@ -110,12 +156,14 @@ export default function CarouselModify() {
             </button>
           </div>
         </div>
-
-        <CarouselShow
-          images={images}
-          setImageId={setImageId}
-          imageId={imageId}
-        />
+        {areImagesLoaded && (
+          <CarouselShow
+            images={images}
+            setImageId={setImageId}
+            imageId={imageId}
+            setVisualize={setVisualize}
+          />
+        )}{' '}
         <div className="mt-10">
           <form
             action=""
@@ -130,13 +178,24 @@ export default function CarouselModify() {
               doStuff();
             }}
           >
-            <div className="flex justify-center">
+            <div className="flex justify-center mb-5">
               <FileInput
                 type="image"
                 name="Importez une image"
                 id="file"
                 value={inputValue}
                 file={currentData}
+                visualize={
+                  <Visualizer
+                    image={visualize}
+                    preview={currentData}
+                    page={page}
+                    title={title}
+                    desc={desc}
+                    color={color}
+                    textColor={textColor}
+                  />
+                }
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   if (e.currentTarget.files) {
                     setInputValue(e.currentTarget.value);
@@ -146,22 +205,42 @@ export default function CarouselModify() {
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <div className="">
-                <TextArea
-                  name="Texte alternatif"
-                  value={alt}
-                  onChange={e => setAlt(e.currentTarget.value)}
-                  id="alt"
-                />
-              </div>
-              <div>
-                <TextInput
-                  value={url}
-                  onChange={e => setUrl(e.currentTarget.value)}
-                  name="URL de redirection"
-                  id="url"
-                />
-              </div>
+              <TextArea
+                name="Texte alternatif"
+                value={alt}
+                onChange={e => setAlt(e.currentTarget.value)}
+                id="alt"
+              />
+              <TextInput
+                value={url}
+                onChange={e => setUrl(e.currentTarget.value)}
+                name="URL de redirection"
+                id="url"
+              />{' '}
+              <TextArea
+                name="Description"
+                value={desc}
+                onChange={e => setDesc(e.currentTarget.value)}
+                id="desc"
+              />
+              <TextInput
+                value={title}
+                onChange={e => setTitle(e.currentTarget.value)}
+                name="Titre"
+                id="title"
+              />{' '}
+              <TextInput
+                value={textColor}
+                onChange={e => setTextColor(e.currentTarget.value)}
+                name="Couleur du texte"
+                id="text-color"
+              />{' '}
+              <TextInput
+                value={color}
+                onChange={e => setColor(e.currentTarget.value)}
+                name="Couleur de fond"
+                id="color"
+              />{' '}
             </div>
             <div className="flex justify-center mt-10">
               <SubmitInput disabled={loading} />

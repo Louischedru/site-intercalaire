@@ -8,7 +8,7 @@ export interface CarouselInterface {
   title?: string;
   desc?: string;
   color?: string;
-  textColor: string;
+  textColor?: string;
 }
 
 export async function getOne(carouselId: string) {
@@ -55,6 +55,7 @@ export async function modifyOther(
   body: {
     alt: string;
     title?: string;
+    desc?: string;
     url?: string;
     color?: string;
     textColor?: string;
