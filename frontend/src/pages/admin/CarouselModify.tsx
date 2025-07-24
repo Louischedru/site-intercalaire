@@ -25,7 +25,20 @@ export default function CarouselModify() {
   const [color, setColor] = useState('');
   const [textColor, setTextColor] = useState('');
 
+  const deleteImage = async () => {
+    setLoading(true);
+    try {
+      const response = await carouselCalls.deleteImage(imageId);
+      console.log(response);
+      await getImages();
+    } catch (error) {
+      console.log(error);
+    }
+    setLoading(false);
+  };
+
   const modifyImage = async () => {
+    setLoading(true);
     try {
       const response = await carouselCalls.modifyOther(imageId, {
         alt,
@@ -39,6 +52,20 @@ export default function CarouselModify() {
     } catch (error) {
       console.log(error);
     }
+
+    if (!currentData) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const response = await carouselCalls.modifyImage(imageId, currentData);
+      console.log(response);
+      await getImages();
+    } catch (error) {
+      console.log(error);
+    }
+    setLoading(false);
   };
 
   const submitImage = async () => {
@@ -55,10 +82,16 @@ export default function CarouselModify() {
       setCurrentData(undefined);
     } catch (error) {
       console.log(error);
-      setLoading(false);
     }
     try {
-      const response = await carouselCalls.modifyOther(id, { alt, url });
+      const response = await carouselCalls.modifyOther(id, {
+        alt,
+        url,
+        title,
+        desc,
+        color,
+        textColor,
+      });
       console.log(response);
       setUrl('');
       setAlt('');
@@ -73,6 +106,7 @@ export default function CarouselModify() {
     setAreImagesLoaded(false);
     setImages([]);
     setVisualize(null);
+    setImageId(-1);
     try {
       setImages(await carouselCalls.getOne(page));
       setAreImagesLoaded(true);
@@ -95,6 +129,7 @@ export default function CarouselModify() {
     };
 
     getImages2();
+    setImageId(-1);
   }, [page]);
 
   useEffect(() => {
@@ -128,11 +163,17 @@ export default function CarouselModify() {
     const textColorElement =
       (document.getElementById('text-color') as HTMLInputElement) ||
       document.createElement('input');
+    const descElement =
+      (document.getElementById('desc') as HTMLTextAreaElement) ||
+      document.createElement('textarea');
+
     altElement.value = element?.alt || '';
     urlElement.value = element?.url || '';
     titleElement.value = element?.title || '';
     colorElement.value = element?.color || '';
     textColorElement.value = element?.textColor || '';
+    descElement.value = element?.desc || '';
+    setCurrentData(undefined);
   }, [imageId, images]);
 
   return (
@@ -242,8 +283,16 @@ export default function CarouselModify() {
                 id="color"
               />{' '}
             </div>
-            <div className="flex justify-center mt-10">
+            <div className="flex justify-center mt-10 gap-4">
               <SubmitInput disabled={loading} />
+              {imageId != -1 && (
+                <button
+                  className="text-white bg-[#ff2727] p-2 disabled:bg-[#5c5c5c]"
+                  onClick={() => deleteImage()}
+                >
+                  Supprimer
+                </button>
+              )}{' '}
             </div>
           </form>
         </div>

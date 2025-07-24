@@ -74,3 +74,43 @@ export async function modifyOther(
 
   return await response.json();
 }
+
+export async function modifyImage(id: number, file: File) {
+  const fd = new FormData();
+
+  if (!File) {
+    throw new Error('Aucun fichier sélectionné');
+    return null;
+  }
+
+  fd.append('file', file as File);
+
+  const response = await fetchAPIFormData(
+    {
+      route: `/carousel/modifyimage/${id}`,
+      method: 'PUT',
+    },
+    fd,
+  );
+
+  if (response.error) {
+    throw response.error;
+    return null;
+  }
+
+  return response.res;
+}
+
+export async function deleteImage(id: number) {
+  const response = await fetchAPI({
+    route: `/carousel/${id}`,
+    method: 'DELETE',
+  });
+
+  if (!response.ok) {
+    throw new Error(response.statusText);
+    return null;
+  }
+
+  return await response.json();
+}
