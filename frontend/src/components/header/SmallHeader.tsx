@@ -11,7 +11,7 @@ export default function SmallHeader() {
   return (
     <>
       <BurgerMenu show={showMenu} setShow={setShowMenu} />
-      <div className="bg-black p-3 bg-opacity-80 fixed top-0 left-0">
+      <div className="bg-black p-3 bg-opacity-10 fixed top-0 left-0 z-20">
         <div className="list-none flex items-center">
           <div className="w-1/3 md:w-1/4">
             <Link to="/">
