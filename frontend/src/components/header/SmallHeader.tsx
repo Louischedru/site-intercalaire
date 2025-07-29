@@ -5,13 +5,20 @@ import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { useState } from 'react';
 import BurgerMenu from './BurgerMenu';
 
-export default function SmallHeader() {
+interface Props {
+  isScrolled: boolean;
+}
+
+export default function SmallHeader(props: Props) {
   const [showMenu, setShowMenu] = useState(false);
 
   return (
     <>
       <BurgerMenu show={showMenu} setShow={setShowMenu} />
-      <div className="bg-black p-3 bg-opacity-10 fixed top-0 left-0 z-20">
+      <div
+        className={`bg-black p-3 ${props.isScrolled ? 'bg-opacity-80' : 'bg-opacity-10'} fixed top-0 left-0 z-20`}
+        style={{ transitionDuration: '.5s' }}
+      >
         <div className="list-none flex items-center">
           <div className="w-1/3 md:w-1/4">
             <Link to="/">
