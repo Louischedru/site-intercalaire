@@ -1,7 +1,7 @@
 import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
-import { fetchAPI } from '../utils';
-import SimpleImageFrom from '../components/dev/SimpleImageFrom';
-import SimpleImagesList from '../components/dev/SimpleImageList';
+import SimpleImageFrom from '../../components/dev/SimpleImageFrom';
+import SimpleImagesList from '../../components/dev/SimpleImageList';
+import * as simpleTextCalls from '../../api-calls/SimpleText';
 
 export default function DevInterface() {
   return (
@@ -79,29 +79,23 @@ async function createSimpleText(
   itemKey: string,
   setReqStatus: (n: number) => void,
 ) {
-  const response = (await fetchAPI({
-    route: '/simpletext',
-    method: 'POST',
-    body: { itemKey, data: 'New simple text' },
-    raw: true,
-  })) as Response;
-
-  setReqStatus(response.ok ? 1 : 0);
-  console.log(response);
+  try {
+    const response = await simpleTextCalls.create(itemKey);
+    console.log(response);
+    setReqStatus(1);
+  } catch (error) {
+    console.log(error);
+    setReqStatus(0);
+  }
 }
 
 async function getAllSimpleTexts(setTexts: (s: string[]) => void) {
-  const response = (await fetchAPI({
-    route: '/simpletext',
-    method: 'GET',
-  })) as { texts: [] };
-  const toReturn = [] as string[];
-
-  if (response.texts) {
-    response.texts.forEach((t: { itemKey: string }) => {
-      toReturn.push(t.itemKey);
-    });
-    setTexts(toReturn);
-    console.log(response.texts);
+  try {
+    const response = (await simpleTextCalls.getAll()) as { itemKey: string }[];
+    const items: string[] = [];
+    response.forEach(e => items.push(e.itemKey));
+    setTexts(items);
+  } catch (error) {
+    console.log(error);
   }
 }

@@ -1,6 +1,23 @@
 import { ChangeEvent, FormEvent, useState } from 'react';
-import { fetchAPI, loginTest } from '../../utils';
-import MarkdownIt from 'markdown-it';
+import * as simpleTextCalls from '../../api-calls/SimpleText';
+import { loginTest } from '../../utils';
+import Markdown, { Components } from 'react-markdown';
+
+const mdComponents: Components = {
+  strong({ children }) {
+    return <b>{children}</b>;
+  },
+  em({ children }) {
+    return <i>{children}</i>;
+  },
+  a({ children, href }) {
+    return (
+      <a href={href} className="hover:underline text-[#bee0ff]">
+        {children}
+      </a>
+    );
+  },
+};
 
 export default function SimpleText({ itemKey }: { itemKey: string }) {
   const [data, setData] = useState('');
@@ -8,12 +25,6 @@ export default function SimpleText({ itemKey }: { itemKey: string }) {
   const [isLogin, setIsLogin] = useState(false);
   const [isLoginStopper, setIsLoginStopper] = useState(false);
   const [active, setActive] = useState(false);
-  const md = MarkdownIt({
-    breaks: true,
-    xhtmlOut: true,
-    linkify: !isLogin,
-    typographer: true,
-  });
 
   if (!isLoginStopper) {
     loginTest(setIsLogin);
@@ -36,24 +47,25 @@ export default function SimpleText({ itemKey }: { itemKey: string }) {
         />
       ) : null}
       <div
-        className={`inline ${isLogin ? 'cursor-pointer hover:bg-select-gray hover:bg-opacity-50  ' : ''}`}
+        className={`inline ${isLogin ? 'cursor-pointer hover:bg-black hover:bg-opacity-50  ' : ''}`}
         onClick={isLogin ? () => setActive(true) : () => {}}
-        dangerouslySetInnerHTML={{ __html: md.render(data) }}
         onMouseOver={
           isLogin
             ? (e: React.MouseEvent<HTMLDivElement>) => {
                 e.currentTarget.style.color = 'rgb(0 200 1200';
               }
-            : () => {}
+            : undefined
         }
         onMouseLeave={
           isLogin
             ? (e: React.MouseEvent<HTMLDivElement>) => {
                 e.currentTarget.style.color = '';
               }
-            : () => {}
+            : undefined
         }
-      ></div>
+      >
+        <Markdown components={mdComponents}>{data}</Markdown>
+      </div>
     </>
   );
 }
@@ -80,7 +92,7 @@ function SimpleTextEditPopup({
     <>
       <div className="bg-black opacity-50 fixed w-screen h-screen top-0 left-0 z-10"></div>
       <div
-        className={`${!dark ? 'bg-white' : 'bg-dark-back text-white'} fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 p-20 rounded-3xl`}
+        className={`${!dark ? 'bg-white' : 'bg-dark-back text-white'} fixed w-screen top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 p-20 rounded-3xl`}
       >
         <form
           action=""
@@ -97,10 +109,9 @@ function SimpleTextEditPopup({
           }}
         >
           <textarea
-            cols={80}
             rows={10}
             value={currentData}
-            className={`text-3xl text-left p-5 block mb-5 ${!dark ? 'text-black' : 'bg-dark-back text-white'}`}
+            className={`w-full text-3xl text-left p-5 block mb-5 ${!dark ? 'text-black' : 'bg-black text-white'}`}
             onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
               setCurrentData(e.currentTarget.value)
             }
@@ -108,11 +119,11 @@ function SimpleTextEditPopup({
           <input
             type="submit"
             value="Valider"
-            className="bg-blue text-white p-2 text-xl w-1/4 font-extrabold rounded-lg hover:bg-blue-dark cursor-pointer mr-1"
+            className="bg-[#7993d7] text-white p-2 text-xl w-1/4 font-extrabold rounded-lg hover:bg-blue-dark cursor-pointer mr-1"
             disabled={loading}
           />
           <button
-            className="p-2 text-xl w-1/4 bg-gray-light hover:bg-gray-dark ml-1 rounded-lg font-extrabold"
+            className="p-2 text-xl w-1/4 bg-[#dddddd] text-black ml-1 rounded-lg font-extrabold"
             onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
               e.preventDefault();
               setActive(false);
@@ -131,9 +142,13 @@ async function fetchData(
   stateSetter: (s: string) => void,
   stopper: (b: boolean) => void,
 ) {
-  const response = await fetchAPI({ route: 'simpletext/' + itemkey });
-  stateSetter(response.data || 'Error');
-  stopper(true);
+  try {
+    const response = await simpleTextCalls.getOne(itemkey);
+    stateSetter(response.data || 'Error');
+    stopper(true);
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 async function submitSimpleText(
@@ -144,16 +159,14 @@ async function submitSimpleText(
   stopper: (b: boolean) => void,
 ) {
   setLoading(true);
-  const response = (await fetchAPI({
-    route: 'simpletext/' + itemKey,
-    method: 'PUT',
-    body: { data: data },
-    raw: true,
-  })) as Response;
 
-  if (response.ok) console.log('text ok');
-  else console.log(response.statusText);
-  setLoading(false);
-  setIsActive(false);
-  stopper(false);
+  try {
+    const response = await simpleTextCalls.modify(itemKey, data);
+    setLoading(false);
+    setIsActive(false);
+    stopper(false);
+    console.log(response);
+  } catch (error) {
+    console.log(error);
+  }
 }

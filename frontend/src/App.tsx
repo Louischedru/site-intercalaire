@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import DevInterface from './pages/DevInterface';
+import DevInterface from './pages/admin/DevInterface';
 import Auth from './pages/Auth';
 import Home from './pages/Home';
 

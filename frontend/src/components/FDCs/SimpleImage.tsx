@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
-import { fetchAPI, loginTest } from '../../utils';
-import Cookies from 'js-cookie';
-import axios from 'axios';
+import * as simpleImageCalls from '../../api-calls/SimpleImage';
+import FileInput from '../forms/FileInput';
+import Visualizer from './SimpleImageVisualizer';
+import { loginTest } from '../../utils';
+import SubmitInput from '../forms/SubmitInput';
+import TextArea from '../forms/TextArea';
 
 interface Props {
   itemKey: string;
@@ -9,7 +12,8 @@ interface Props {
 }
 
 export default function SimpleImage({ itemKey, className }: Props) {
-  const [image, setImage] = useState('');
+  const [image, setImage] =
+    useState<simpleImageCalls.SimpleImageInterface | null>(null);
   const [isLogin, setIsLogin] = useState(false);
   const [active, setActive] = useState(false);
 
@@ -25,6 +29,7 @@ export default function SimpleImage({ itemKey, className }: Props) {
       {isLogin && (
         <SimpleImagePopup
           itemKey={itemKey}
+          image={image}
           active={active}
           setActive={setActive}
         />
@@ -37,70 +42,76 @@ export default function SimpleImage({ itemKey, className }: Props) {
               }
             : () => {}
         }
-        src={image}
+        src={image?.url}
         className={className}
-        alt=""
+        alt={image?.alt}
       />
       ;
     </>
   );
 }
 
-async function getSimpleImage(itemKey: string, setImage: (s: string) => void) {
-  const response = (await fetchAPI({
-    route: '/simpleimage/' + itemKey,
-    raw: true,
-  })) as Response;
-
-  if (response.ok) {
-    const body = (await response.json()) as { url: string };
-    setImage(body.url);
-    console.log(body);
-  } else {
-    console.log('Couldn`t get image');
+async function getSimpleImage(
+  itemKey: string,
+  setImage: (s: simpleImageCalls.SimpleImageInterface | null) => void,
+) {
+  try {
+    const response = await simpleImageCalls.getOne(itemKey);
+    setImage({ ...response });
+  } catch (error) {
+    console.log(error);
   }
 }
 
 function SimpleImagePopup({
   itemKey,
+  image,
   active,
   setActive,
 }: {
   itemKey: string;
   active: boolean;
+  image: simpleImageCalls.SimpleImageInterface | null;
   setActive: (b: boolean) => void;
 }) {
   const [loading, setLoading] = useState(false);
   const [currentData, setCurrentData] = useState<File>();
+  const [alt, setAlt] = useState('');
+  const [inputValue, setInputValue] = useState('');
 
   return active ? (
     <>
-      <div className="bg-black opacity-50 fixed w-screen h-screen top-0 left-0 z-10"></div>
-      <div className="bg-white fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 p-20 rounded-3xl">
+      <div className="bg-black opacity-50 fixed w-screen h-screen top-0 left-0 z-40"></div>
+      <div className="bg-white fixed top-0 bottom-0 overflow-scroll left-1/2 -translate-x-1/2 z-50 p-20 rounded-3xl my-5">
         <form
           action=""
           className="text-center"
           onSubmit={(e: React.FormEvent) => {
             e.preventDefault();
-            submitImageAxios(itemKey, currentData, setActive, setLoading);
+            submitSimpleImage(itemKey, currentData, alt, setActive, setLoading);
           }}
         >
-          <input
-            type="file"
-            name="file"
-            id="file"
+          <FileInput
+            type="image"
+            name="Importez une image"
+            id={`${itemKey}-file`}
+            value={inputValue}
+            file={currentData}
+            visualize={<Visualizer element={image} preview={currentData} />}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               if (e.currentTarget.files) {
+                setInputValue(e.currentTarget.value);
                 setCurrentData(e.currentTarget.files[0]);
               }
             }}
           />
-          <input
-            type="submit"
-            value="Valider"
-            className="bg-blue text-white p-2 text-xl w-1/4 font-extrabold rounded-lg hover:bg-blue-dark cursor-pointer mr-1"
-            disabled={loading}
+          <TextArea
+            name="Texte alternatif"
+            value={alt}
+            onChange={e => setAlt(e.currentTarget.value)}
+            id={`${itemKey}-alt`}
           />
+          <SubmitInput disabled={loading} />
           <button
             className="p-2 text-xl w-1/4 bg-gray-light hover:bg-gray-dark ml-1 rounded-lg font-extrabold"
             onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
@@ -119,52 +130,18 @@ function SimpleImagePopup({
 async function submitSimpleImage(
   itemKey: string,
   data: File | undefined,
+  alt: string,
   setIsActive: (b: boolean) => void,
   setLoading: (b: boolean) => void,
 ) {
-  if (!data) return;
   setLoading(true);
-  const fd = new FormData();
-  fd.append('file', data);
-  console.log('FD', fd);
-  const response = (await fetchAPI({
-    route: 'simpleimage/' + itemKey,
-    method: 'PUT',
-    body: fd,
-    raw: true,
-  })) as Response;
 
-  if (response.ok) console.log('image ok');
-  else console.log(response.statusText);
-  setLoading(false);
-  setIsActive(false);
-}
-
-async function submitImageAxios(
-  itemKey: string,
-  file: File | undefined,
-  setIsActive: (b: boolean) => void,
-  setLoading: (b: boolean) => void,
-) {
-  if (!file) return;
-  setLoading(true);
-  const fd = new FormData();
-
-  axios.defaults.headers.common = {
-    authorization: Cookies.get('authorization') || '',
-  };
-
-  fd.append('file', file);
   try {
-    const response = await axios.put(
-      'http://localhost:8080/api/simpleimage/' + itemKey,
-      fd,
-    );
-    console.log(response);
-    setLoading(false);
-    setIsActive(false);
+    console.log(await simpleImageCalls.modifyImage(itemKey, data));
+    console.log(await simpleImageCalls.modifyAlt(itemKey, alt));
   } catch (error) {
     console.log(error);
-    setLoading(false);
   }
+  setLoading(false);
+  setIsActive(false);
 }
