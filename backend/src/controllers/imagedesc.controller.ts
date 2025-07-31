@@ -27,14 +27,14 @@ export async function create(req: Request, res: Response) {
     if (!buffer) throw 'No file provided';
     await sharp(buffer).webp({ quality: 20 }).toFile(path.join(filePath, ref));
 
-    await imageDescModel.create({
+    const item = await imageDescModel.create({
       path: ref,
       title: '',
       desc: '',
       list,
       alt: '',
     });
-    res.status(200).json({ message: 'ok' });
+    res.status(200).json({ id: item?.toJSON().id });
   } catch (error) {
     res.status(400).json({ error });
     console.log(error);

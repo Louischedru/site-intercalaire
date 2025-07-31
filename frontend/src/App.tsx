@@ -7,6 +7,7 @@ import MainLayout from './pages/layout';
 import AdminLayout from './pages/admin/layout';
 import CarouselModify from './pages/admin/CarouselModify';
 import NosProjets from './pages/NosProjets';
+import EditConcours from './pages/admin/EditConcours';
 
 function App() {
   return (
@@ -17,8 +18,9 @@ function App() {
           <Route path="/nos-projets" element={<NosProjets />} />
         </Route>
         <Route element={<AdminLayout />} path="/admin">
-          <Route path="/admin//dev" element={<DevInterface />} />
+          <Route path="/admin/dev" element={<DevInterface />} />
           <Route path="/admin/carousel" element={<CarouselModify />} />
+          <Route path="/admin/edit-concours" element={<EditConcours />} />
         </Route>
         <Route path="/auth" element={<Auth />} />
       </Routes>

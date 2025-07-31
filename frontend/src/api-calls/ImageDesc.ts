@@ -1,5 +1,13 @@
 import { fetchAPI, fetchAPIFormData } from '../utils';
 
+export interface ImageDescInterface {
+  id: number;
+  desc: string;
+  title: string;
+  alt: string;
+  url: string;
+}
+
 export async function getList(list: string) {
   const response = await fetchAPI({
     route: '/imagedesc/' + list,
@@ -23,8 +31,8 @@ export async function addToList(list: string, file?: File) {
 
   const response = await fetchAPIFormData(
     {
-      route: '/imagedesc/' + list,
-      method: 'GET',
+      route: '/imagedesc/create/' + list,
+      method: 'PUT',
     },
     fd,
   );
@@ -42,7 +50,7 @@ export async function modifyOther(
   body: { desc: string; title: string; alt: string },
 ) {
   const response = await fetchAPI({
-    route: `/imagredesc/modifyother/${id}`,
+    route: `/imagedesc/modifyother/${id}`,
     method: 'PUT',
     body,
   });

@@ -1,46 +1,37 @@
-import { useEffect, useState } from 'react';
-import { fetchAPI, fetchAPIFormData, loginTest } from '../utils';
-import MarkdownIt from 'markdown-it';
-import ThemedText from './ThemedText';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
-const key = 0;
+import { ReactNode, useEffect, useState } from 'react';
+import * as imageDescCalls from '../../api-calls/ImageDesc';
+import FileInput from '../forms/FileInput';
+import TextArea from '../forms/TextArea';
+import TextInput from '../forms/TextInput';
+import SubmitInput from '../forms/SubmitInput';
+import { loginTest } from '../../utils';
+
+let key = 0;
 
 interface Props {
   list: string;
+  Container: (props: { children: ReactNode }) => JSX.Element;
+  ItemModel: (props: {
+    onClick: () => void;
+    element: imageDescCalls.ImageDescInterface;
+  }) => JSX.Element;
 }
 
-interface DataImageDesc {
-  id: number;
-  url: string;
-  desc: string;
-}
-
-export default function ImageDesc({ list }: Props) {
-  const [items, setItems] = useState<DataImageDesc[]>();
+export default function ImageDesc(props: Props) {
+  const [items, setItems] = useState<imageDescCalls.ImageDescInterface[]>();
   const [isLogged, setIsLogged] = useState(false);
   const [active, setActive] = useState(false);
   const [mdActive, setMdActive] = useState(false);
-  const [targetElement, setTargetElement] = useState<DataImageDesc>();
+  const [targetElement, setTargetElement] =
+    useState<imageDescCalls.ImageDescInterface>();
   const [dataReload, setDataReload] = useState(true);
-  const [miActive, setMiActive] = useState(false);
-  const md = MarkdownIt({
-    breaks: true,
-    xhtmlOut: true,
-    linkify: !isLogged,
-    typographer: true,
-  });
 
   const getItems = async () => {
-    const response = (await fetchAPI({
-      route: `imagedesc/${list}`,
-      raw: true,
-    })) as Response;
-
-    console.log(response);
-
-    if (response.ok) {
-      setItems(await response.json());
+    try {
+      const response = await imageDescCalls.getList(props.list);
+      setItems(response);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -51,308 +42,123 @@ export default function ImageDesc({ list }: Props) {
 
   useEffect(() => {
     const effect = async () => {
-      const response = (await fetchAPI({
-        route: `imagedesc/${list}`,
-        raw: true,
-      })) as Response;
-
-      if (response.ok) {
-        setItems(await response.json());
+      try {
+        const response = await imageDescCalls.getList(props.list);
+        setItems(response);
+      } catch (error) {
+        console.log(error);
       }
     };
 
     effect();
     loginTest(setIsLogged);
-  }, [list]);
+  }, [props.list]);
 
   return (
     <>
       {isLogged && active && (
         <CreateImageDescPopup
-          carouselId={list}
+          list={props.list}
           active={active}
           setActive={setActive}
-          foreignGetImages={getItems}
         />
       )}
       {isLogged && mdActive && (
-        <ModifyDescPopup
-          id={targetElement?.id || 0}
+        <ModifyImageDescPopup
+          element={targetElement}
           active={mdActive}
           setActive={setMdActive}
-          data={targetElement?.desc || ''}
-          setDataStopper={setDataReload}
         />
       )}
-      {isLogged && miActive && (
-        <ModifyImagePopup
-          id={targetElement?.id || 0}
-          active={miActive}
-          setActive={setMiActive}
-          setDataStopper={setDataReload}
-        />
+      {isLogged && (
+        <div className="w-full text-center">
+          <button
+            className="text-xl bg-white hover:underline p-3 rounded-lg"
+            onClick={() => setActive(true)}
+          >
+            Nouveau
+          </button>
+        </div>
       )}
-      <div>
-        {isLogged && (
-          <div className="w-full text-center">
-            <button
-              className="text-xl bg-blue p-3 rounded-lg"
-              onClick={() => setActive(true)}
-            >
-              Nouveau
-            </button>
-          </div>
-        )}
+      <props.Container>
         {items?.map(i => {
+          key++;
           return (
-            <div className="flex flex-col lg:flex-row gap-4 m-3 items-center relative">
-              <div
-                className="p-3 bg-black w-full lg:w-1/4"
-                onClick={
-                  isLogged
-                    ? () => {
-                        setTargetElement(i);
-                        setMiActive(true);
-                      }
-                    : () => {}
-                }
-              >
-                <img src={i.url} alt="" />
-              </div>
-              <ThemedText type="p">
-                <div
-                  className={`${isLogged && 'hover:text-blue'} w-full`}
-                  dangerouslySetInnerHTML={{ __html: md.render(i.desc) }}
-                  onClick={
-                    isLogged
-                      ? () => {
-                          setTargetElement(i);
-                          setMdActive(true);
-                        }
-                      : () => {}
-                  }
-                ></div>
-              </ThemedText>
-              {isLogged && (
-                <button
-                  onClick={() => deleteImageDesc(i.id, setDataReload)}
-                  className="absolute right-0 top-0 text-xl cursor-pointer"
-                >
-                  <FontAwesomeIcon icon={faTrash} />
-                </button>
-              )}
-            </div>
+            <props.ItemModel
+              onClick={() => {
+                setTargetElement(i);
+                setMdActive(true);
+              }}
+              element={i}
+              key={`id-${props.list}-${key}`}
+            />
           );
         })}
-      </div>
+      </props.Container>
     </>
   );
 }
 
 function CreateImageDescPopup({
-  carouselId,
+  list,
   active,
   setActive,
-  foreignGetImages,
 }: {
-  carouselId: string;
+  list: string;
   active: boolean;
   setActive: (b: boolean) => void;
-  foreignGetImages: () => void;
 }) {
   const [loading, setLoading] = useState(false);
   const [currentData, setCurrentData] = useState<File>();
-  const [images, setImages] = useState<{ id: number; url: string }[]>([]);
-  const [inputValue, setInputValue] = useState('');
+  const [alt, setAlt] = useState('');
+  const [title, setTitle] = useState('');
   const [desc, setDesc] = useState('');
+  const [inputValue, setInputValue] = useState('');
 
-  const submitImage = async () => {
-    if (!currentData) return;
-    setLoading(true);
-    const fd = new FormData();
-    fd.append('file', currentData as File);
-    fd.append('desc', desc);
-    fd.append('list', carouselId);
-    const response = await fetchAPIFormData(
-      {
-        route: 'imagedesc/',
-        method: 'POST',
-      },
-      fd,
-    );
-    if (response.res) {
+  const submit = async () => {
+    try {
+      setLoading(true);
+      const response = await imageDescCalls.addToList(list, currentData);
+      const it = response?.data as { id: number };
+      console.log(it);
+      const response2 = await imageDescCalls.modifyOther(it.id, {
+        alt,
+        title,
+        desc,
+      });
+
+      console.log(response2);
       setLoading(false);
-    } else {
-      console.log(response.error);
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
     }
   };
 
   return active ? (
     <>
-      <div className="bg-black opacity-50 fixed w-screen h-screen top-0 left-0 z-10"></div>
-      <div className="bg-white fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 p-16 rounded-3xl h-5/6 w-5/6">
-        <div className="flex h-full w-full">
-          <form
-            action=""
-            className="text-center w-full"
-            onSubmit={(e: React.FormEvent) => {
-              e.preventDefault();
-              const doStuff = async () => {
-                await submitImage();
-                setInputValue('');
-                foreignGetImages();
-              };
-              doStuff();
-            }}
-          >
-            <input
-              type="file"
-              name="file"
-              id="file"
-              className="text-black"
-              value={inputValue}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                if (e.currentTarget.files) {
-                  setInputValue(e.currentTarget.value);
-                  setCurrentData(e.currentTarget.files[0]);
-                }
-              }}
-            />
-            <textarea
-              cols={70}
-              rows={10}
-              className="text-black text-2xl"
-              value={desc}
-              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
-                setDesc(e.currentTarget.value);
-              }}
-            ></textarea>
-            <input
-              type="submit"
-              value="Envoyer"
-              className="bg-blue text-white p-2 text-xl w-2/4 font-extrabold rounded-lg hover:bg-blue-dark cursor-pointer mr-1 mt-5"
-              disabled={loading}
-            />
-            <button
-              className="p-2 mt-2 text-xl w-2/4 bg-gray-light hover:bg-gray-dark ml-1 rounded-lg font-extrabold"
-              onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-                e.preventDefault();
-                setActive(false);
-              }}
-            >
-              Annuler
-            </button>
-          </form>
-        </div>
-      </div>
-    </>
-  ) : null;
-}
-
-function ModifyDescPopup({
-  id,
-  data,
-  active,
-  setActive,
-  setDataStopper,
-  dark,
-}: {
-  id: number;
-  data: string;
-  active: boolean;
-  setActive: (b: boolean) => void;
-  setDataStopper: (b: boolean) => void;
-  dark?: boolean;
-}) {
-  const [loading, setLoading] = useState(false);
-  const [currentData, setCurrentData] = useState(data);
-
-  return active ? (
-    <>
-      <div className="bg-black opacity-50 fixed w-screen h-screen top-0 left-0 z-10"></div>
-      <div
-        className={`${!dark ? 'bg-white' : 'bg-dark-back text-white'} fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 p-20 rounded-3xl`}
-      >
+      <div className="bg-black opacity-50 fixed w-screen h-screen top-0 left-0 z-40"></div>
+      <div className="bg-white fixed top-0 bottom-0 overflow-scroll left-1/2 -translate-x-1/2 z-50 p-20 rounded-3xl my-5 w-2/3">
         <form
           action=""
           className="text-center"
           onSubmit={(e: React.FormEvent) => {
             e.preventDefault();
-            submitSimpleText(
-              id,
-              currentData,
-              setActive,
-              setLoading,
-              setDataStopper,
-            );
-          }}
-        >
-          <textarea
-            cols={80}
-            rows={10}
-            value={currentData}
-            className={`text-3xl text-left p-5 block mb-5 ${!dark ? 'text-black' : 'bg-dark-back text-white'}`}
-            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-              setCurrentData(e.currentTarget.value)
-            }
-          ></textarea>
-          <input
-            type="submit"
-            value="Valider"
-            className="bg-blue text-white p-2 text-xl w-1/4 font-extrabold rounded-lg hover:bg-blue-dark cursor-pointer mr-1"
-            disabled={loading}
-          />
-          <button
-            className="p-2 text-xl w-1/4 bg-gray-light hover:bg-gray-dark ml-1 rounded-lg font-extrabold"
-            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-              e.preventDefault();
+            const doStuff = async () => {
+              await submit();
               setActive(false);
-            }}
-          >
-            Annuler
-          </button>
-        </form>
-      </div>
-    </>
-  ) : null;
-}
+            };
 
-function ModifyImagePopup({
-  id,
-  active,
-  setActive,
-  setDataStopper,
-  dark,
-}: {
-  id: number;
-  active: boolean;
-  setActive: (b: boolean) => void;
-  setDataStopper: (b: boolean) => void;
-  dark?: boolean;
-}) {
-  const [currentData, setCurrentData] = useState<File>();
-  const [inputValue, setInputValue] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  return active ? (
-    <>
-      <div className="bg-black opacity-50 fixed w-screen h-screen top-0 left-0 z-10"></div>
-      <div
-        className={`${!dark ? 'bg-white' : 'bg-dark-back text-white'} fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 p-20 rounded-3xl`}
-      >
-        <form
-          action=""
-          className="text-center"
-          onSubmit={(e: React.FormEvent) => {
-            e.preventDefault();
-            submitImage(id, setDataStopper, setLoading, setActive, currentData);
+            doStuff();
           }}
         >
-          <input
-            type="file"
-            name="file"
-            id="file"
+          <FileInput
+            type="image"
+            name="Importez une image"
+            id={`${list}-file`}
             value={inputValue}
+            file={currentData}
+            visualize={<Visualizer element={null} preview={currentData} />}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               if (e.currentTarget.files) {
                 setInputValue(e.currentTarget.value);
@@ -360,12 +166,25 @@ function ModifyImagePopup({
               }
             }}
           />
-          <input
-            type="submit"
-            value="Valider"
-            className="bg-blue text-white p-2 text-xl w-1/4 font-extrabold rounded-lg hover:bg-blue-dark cursor-pointer mr-1"
-            disabled={loading}
+          <TextArea
+            name="Texte alternatif"
+            value={alt}
+            onChange={e => setAlt(e.currentTarget.value)}
+            id={`${list}-alt`}
           />
+          <TextInput
+            name="Titre"
+            value={title}
+            onChange={e => setTitle(e.currentTarget.value)}
+            id={`${list}-title`}
+          />
+          <TextArea
+            name="Description"
+            value={desc}
+            onChange={e => setDesc(e.currentTarget.value)}
+            id={`${list}-desc`}
+          />
+          <SubmitInput disabled={loading} />
           <button
             className="p-2 text-xl w-1/4 bg-gray-light hover:bg-gray-dark ml-1 rounded-lg font-extrabold"
             onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
@@ -381,62 +200,140 @@ function ModifyImagePopup({
   ) : null;
 }
 
-async function submitSimpleText(
-  itemKey: number,
-  data: string,
-  setIsActive: (b: boolean) => void,
-  setLoading: (b: boolean) => void,
-  stopper: (b: boolean) => void,
-) {
-  setLoading(true);
-  const response = (await fetchAPI({
-    route: 'imagedesc/modifydesc' + itemKey,
-    method: 'PUT',
-    body: { desc: data },
-    raw: true,
-  })) as Response;
+function ModifyImageDescPopup({
+  element,
+  active,
+  setActive,
+}: {
+  element?: imageDescCalls.ImageDescInterface;
+  active: boolean;
+  setActive: (b: boolean) => void;
+}) {
+  const [loading, setLoading] = useState(false);
+  const [currentData, setCurrentData] = useState<File>();
+  const [alt, setAlt] = useState(element?.alt || '');
+  const [title, setTitle] = useState(element?.title || '');
+  const [desc, setDesc] = useState(element?.desc || '');
+  const [inputValue, setInputValue] = useState('');
 
-  if (response.ok) console.log('text ok');
-  else console.log(response.statusText);
-  setLoading(false);
-  setIsActive(false);
-  stopper(false);
+  useEffect(() => {
+    const titleElem =
+      (document.getElementById('id-m-title') as HTMLInputElement) ||
+      document.createElement('input');
+    const descElement =
+      (document.getElementById('id-m-desc') as HTMLTextAreaElement) ||
+      document.createElement('textarea');
+    const altElement =
+      (document.getElementById('id-m-alt') as HTMLTextAreaElement) ||
+      document.createElement('textarea');
+
+    titleElem.value = element?.title || '';
+    descElement.value = element?.desc || '';
+    altElement.value = element?.alt || '';
+  }, [element]);
+
+  if (!element) return <></>;
+
+  const submit = async () => {
+    try {
+      setLoading(true);
+      if (currentData) {
+        const response = await imageDescCalls.modifyImage(
+          element.id,
+          currentData,
+        );
+        console.log(response);
+      }
+      const response2 = await imageDescCalls.modifyOther(element.id, {
+        alt,
+        title,
+        desc,
+      });
+
+      console.log(response2);
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
+  };
+
+  return active ? (
+    <>
+      <div className="bg-black opacity-50 fixed w-screen h-screen top-0 left-0 z-40"></div>
+      <div className="bg-white fixed top-0 bottom-0 overflow-scroll left-1/2 -translate-x-1/2 z-50 p-20 rounded-3xl my-5 w-2/3">
+        <form
+          action=""
+          className="text-center"
+          onSubmit={(e: React.FormEvent) => {
+            e.preventDefault();
+            const doStuff = async () => {
+              submit();
+              setActive(false);
+            };
+
+            doStuff();
+          }}
+        >
+          <FileInput
+            type="image"
+            name="Importez une image"
+            id={`id-m-file`}
+            value={inputValue}
+            file={currentData}
+            visualize={<Visualizer element={element} preview={currentData} />}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              if (e.currentTarget.files) {
+                setInputValue(e.currentTarget.value);
+                setCurrentData(e.currentTarget.files[0]);
+              }
+            }}
+          />
+          <TextArea
+            name="Texte alternatif"
+            value={alt}
+            onChange={e => setAlt(e.currentTarget.value)}
+            id={`id-m-alt`}
+          />
+          <TextInput
+            name="Titre"
+            value={title}
+            onChange={e => setTitle(e.currentTarget.value)}
+            id={`id-m-title`}
+          />
+          <TextArea
+            name="Description"
+            value={desc}
+            onChange={e => setDesc(e.currentTarget.value)}
+            id={`id-m-desc`}
+          />
+          <SubmitInput disabled={loading} />
+          <button
+            className="p-2 text-xl w-1/4 bg-gray-light hover:bg-gray-dark ml-1 rounded-lg font-extrabold"
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              e.preventDefault();
+              setActive(false);
+            }}
+          >
+            Annuler
+          </button>
+        </form>
+      </div>
+    </>
+  ) : null;
 }
 
-async function submitImage(
-  id: number,
-  stopper: (b: boolean) => void,
-  setLoading: (b: boolean) => void,
-  setIsActive: (b: boolean) => void,
-  file?: File,
-) {
-  setLoading(true);
-  const fd = new FormData();
+function Visualizer(props: {
+  element: imageDescCalls.ImageDescInterface | null;
+  preview?: File;
+}) {
+  const previewUrl =
+    (props.preview && URL.createObjectURL(props.preview)) || null;
+  const src = previewUrl || props.element?.url || '';
 
-  fd.append('file', file);
-
-  const response = await fetchAPIFormData(
-    {
-      route: `imagedesc/modifyimage/${id}`,
-      method: 'PUT',
-      raw: true,
-    },
-    fd,
+  return (
+    <div>
+      <img src={src} alt="" />
+    </div>
   );
-
-  if (response.res) console.log('image ok');
-  else console.log(response.error);
-  setLoading(false);
-  setIsActive(false);
-  stopper(true);
-}
-
-async function deleteImageDesc(id: number, reload?: (b: boolean) => void) {
-  const response = (await fetchAPI({
-    route: `imagedesc/${id}`,
-    method: 'DELETE',
-    raw: true,
-  })) as Response;
-
-  if (response.ok && reload) reload(false);
 }

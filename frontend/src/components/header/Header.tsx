@@ -40,11 +40,9 @@ export default function Header() {
   }, [location]);
 
   useEffect(() => {
-    if (!bgImage) return;
     document.body.style.backgroundImage = bgImage
       ? `url("${bgImage}")`
       : 'none';
-    console.log(document.body.style.backgroundImage, bgImage);
   }, [bgImage]);
 
   setInterval(() => {
