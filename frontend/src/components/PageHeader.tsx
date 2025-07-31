@@ -1,83 +1,86 @@
+import SimpleText from './FDCs/SimpleText';
+import * as simpleImageCalls from '../api-calls/SimpleImage';
 import { useEffect, useState } from 'react';
-import * as simpleImageCalls from '../../api-calls/SimpleImage';
-import FileInput from '../forms/FileInput';
-import Visualizer from './SimpleImageVisualizer';
-import { loginTest } from '../../utils';
-import SubmitInput from '../forms/SubmitInput';
-import TextArea from '../forms/TextArea';
+import { loginTest } from '../utils';
+import FileInput from './forms/FileInput';
+import TextArea from './forms/TextArea';
+import SubmitInput from './forms/SubmitInput';
+import Visualizer from './FDCs/SimpleImageVisualizer';
 
 interface Props {
-  itemKey: string;
-  className?: string;
+  title: string;
+  textKey: string;
+  imageKey: string;
 }
 
-export default function SimpleImage({ itemKey, className }: Props) {
-  const [image, setImage] =
-    useState<simpleImageCalls.SimpleImageInterface | null>(null);
+export default function PageHeader(props: Props) {
   const [isLogin, setIsLogin] = useState(false);
   const [active, setActive] = useState(false);
 
-  console.log('imgae: ' + image);
-
   useEffect(() => {
-    getSimpleImage(itemKey, setImage);
     loginTest(setIsLogin);
-  }, [itemKey]);
+  }, []);
 
   return (
     <>
       {isLogin && (
         <SimpleImagePopup
-          itemKey={itemKey}
-          image={image}
+          itemKey={props.imageKey}
           active={active}
           setActive={setActive}
         />
       )}
-      <img
-        onClick={
-          isLogin
-            ? () => {
-                setActive(true);
-              }
-            : () => {}
-        }
-        src={image?.url}
-        className={className}
-        alt={image?.alt}
-      />
-      ;
+
+      <div className="p-8 text-center text-white md:p-16 md:text-left">
+        <h1 className="gobold text-2xl mb-3 xl:text-3xl xl:mb-4">
+          {props.title}
+        </h1>
+        <div className="md:w-3/4 lg:w-2/3 xl:w-5/12">
+          <SimpleText itemKey={props.textKey} />
+        </div>
+        {isLogin && (
+          <div className="flex justify-center mt-10">
+            <button
+              className="bg-white text-black p-3"
+              onClick={() => setActive(true)}
+            >
+              Modifier l'image
+            </button>
+          </div>
+        )}
+      </div>
     </>
   );
 }
 
-async function getSimpleImage(
-  itemKey: string,
-  setImage: (s: simpleImageCalls.SimpleImageInterface | null) => void,
-) {
-  try {
-    const response = await simpleImageCalls.getOne(itemKey);
-    setImage({ ...response });
-  } catch (error) {
-    console.log(error);
-  }
-}
-
 export function SimpleImagePopup({
   itemKey,
-  image,
   active,
   setActive,
 }: {
   itemKey: string;
   active: boolean;
-  image: simpleImageCalls.SimpleImageInterface | null;
   setActive: (b: boolean) => void;
 }) {
   const [loading, setLoading] = useState(false);
   const [currentData, setCurrentData] = useState<File>();
   const [alt, setAlt] = useState('');
   const [inputValue, setInputValue] = useState('');
+  const [image, setImage] =
+    useState<simpleImageCalls.SimpleImageInterface | null>(null);
+
+  const getImage = async () => {
+    try {
+      const response = await simpleImageCalls.getOne(itemKey);
+      setImage(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getImage();
+  });
 
   return active ? (
     <>

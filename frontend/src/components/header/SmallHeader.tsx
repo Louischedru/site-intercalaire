@@ -7,6 +7,7 @@ import BurgerMenu from './BurgerMenu';
 
 interface Props {
   isScrolled: boolean;
+  isHome: boolean;
 }
 
 export default function SmallHeader(props: Props) {
@@ -16,7 +17,9 @@ export default function SmallHeader(props: Props) {
     <>
       <BurgerMenu show={showMenu} setShow={setShowMenu} />
       <div
-        className={`bg-black p-3 ${props.isScrolled ? 'bg-opacity-80' : 'bg-opacity-10'} fixed top-0 left-0 z-20`}
+        className={`bg-black p-3 ${
+          props.isScrolled || !props.isHome ? 'bg-opacity-80' : 'bg-opacity-10'
+        } top-0 left-0 z-20 ${props.isHome ? 'fixed' : 'sticky'}`}
         style={{ transitionDuration: '.5s' }}
       >
         <div className="list-none flex items-center">

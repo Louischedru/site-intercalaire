@@ -144,7 +144,7 @@ async function fetchData(
 ) {
   try {
     const response = await simpleTextCalls.getOne(itemkey);
-    stateSetter(response.data || 'Error');
+    stateSetter(response.data || 'Texte non rédigé');
     stopper(true);
   } catch (error) {
     console.log(error);

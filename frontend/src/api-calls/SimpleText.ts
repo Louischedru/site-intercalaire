@@ -32,11 +32,11 @@ export async function getOne(itemKey: string) {
   return await response.json();
 }
 
-export async function create(itemkey: string) {
+export async function create(itemKey: string) {
   const response = await fetchAPI({
     route: '/simpletext',
     method: 'POST',
-    body: { itemkey, data: '' },
+    body: { itemKey, data: '' },
   });
 
   if (!response.ok) {

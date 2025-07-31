@@ -5,11 +5,11 @@ import Presentation from '../components/home/Presentation';
 
 export default function Home() {
   return (
-    <>
+    <div className="ip-bg">
       <HomeCarousel />
       <HomeNav />
       <Presentation />
       <FollowUs />
-    </>
+    </div>
   );
 }

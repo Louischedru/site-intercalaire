@@ -42,7 +42,13 @@ export default function HomeCarousel() {
   return (
     <div>
       {elements && (
-        <Carousel responsive={responsive}>
+        <Carousel
+          responsive={responsive}
+          className="z-0"
+          infinite
+          autoPlay
+          autoPlaySpeed={10000}
+        >
           {elements?.map(e => {
             key++;
 

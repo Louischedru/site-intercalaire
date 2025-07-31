@@ -21,10 +21,10 @@ export default function BurgerMenu({ show, setShow }: Props) {
       />
       <nav>
         <ul className="list-none text-white mt-20 text-center text-2xl uppercase font-extralight">
-          <MenuLink name="Nos projets" to={'/'} setShow={setShow} />
-          <MenuLink name="Captations" to={'/'} setShow={setShow} />
-          <MenuLink name="A venir" to={'/'} setShow={setShow} />
-          <MenuLink name="Contact" to={'/'} setShow={setShow} />
+          <MenuLink name="Nos projets" to={'/nos-projets'} setShow={setShow} />
+          <MenuLink name="Captations" to={'/captations'} setShow={setShow} />
+          <MenuLink name="A venir" to={'/a-venir'} setShow={setShow} />
+          <MenuLink name="Contact" to={'/contact'} setShow={setShow} />
           <li className="w-full">
             <Link to={'/'} onClick={() => setShow(false)}>
               <img

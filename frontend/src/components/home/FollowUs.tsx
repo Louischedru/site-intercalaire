@@ -5,7 +5,7 @@ import LargeYouTubeIcon from '../../assets/medias/LargeYouTubeIcon';
 
 export default function FollowUs() {
   return (
-    <div className="my-5">
+    <div className="py-5">
       <div className="flex justify-center mb-8">
         <h1 className="gobold bg-ip-blue p-2 text-2xl text-white text-center inline-block lg:text-4xl lg:p-4">
           Suivez notre travail !
