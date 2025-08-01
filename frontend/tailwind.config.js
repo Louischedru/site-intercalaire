@@ -6,7 +6,9 @@ export default {
     colors: {
       black: "#000000",
       white: "#ffffff",
-      "ip-blue": '#377CC1'
+      "ip-blue": '#377CC1',
+      'almost-white': "#E6EEF6",
+
     },
   },
   plugins: [],

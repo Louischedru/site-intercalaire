@@ -44,7 +44,7 @@ function Rubric(props: { name: string; page: string; itemKey: string }) {
   return (
     <Link
       className="w-1/3 bg-cover bg-center"
-      style={{ backgroundImage: `url(${image?.url})` }}
+      style={{ backgroundImage: `url("${image?.url}")` }}
       to={props.page}
     >
       <b className="text-white gobold text-sm px-4 py-6 block bg-black bg-opacity-50 hover:underline hover:bg-opacity-40 text-center md:py-8 md:text-lg lg:py-14 lg:text-2xl xl:py-20">

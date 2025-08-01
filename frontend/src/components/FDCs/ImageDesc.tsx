@@ -5,6 +5,8 @@ import TextArea from '../forms/TextArea';
 import TextInput from '../forms/TextInput';
 import SubmitInput from '../forms/SubmitInput';
 import { loginTest } from '../../utils';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 let key = 0;
 
@@ -76,25 +78,31 @@ export default function ImageDesc(props: Props) {
             className="text-xl bg-white hover:underline p-3 rounded-lg"
             onClick={() => setActive(true)}
           >
-            Nouveau
+            <FontAwesomeIcon icon={faPlus} /> Ajouter
           </button>
         </div>
       )}
-      <props.Container>
-        {items?.map(i => {
-          key++;
-          return (
-            <props.ItemModel
-              onClick={() => {
-                setTargetElement(i);
-                setMdActive(true);
-              }}
-              element={i}
-              key={`id-${props.list}-${key}`}
-            />
-          );
-        })}
-      </props.Container>
+      {items && (
+        <props.Container>
+          {items?.map(i => {
+            key++;
+            return (
+              <props.ItemModel
+                onClick={
+                  isLogged
+                    ? () => {
+                        setTargetElement(i);
+                        setMdActive(true);
+                      }
+                    : () => {}
+                }
+                element={i}
+                key={`id-${props.list}-${key}`}
+              />
+            );
+          })}
+        </props.Container>
+      )}
     </>
   );
 }
@@ -234,6 +242,15 @@ function ModifyImageDescPopup({
 
   if (!element) return <></>;
 
+  const deleteOne = async () => {
+    try {
+      const response = await imageDescCalls.deleteOne(element.id);
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const submit = async () => {
     try {
       setLoading(true);
@@ -316,6 +333,19 @@ function ModifyImageDescPopup({
             }}
           >
             Annuler
+          </button>
+          <button
+            onClick={() => {
+              const doStuff = async () => {
+                await deleteOne();
+                setActive(false);
+              };
+
+              doStuff();
+            }}
+            className="bg-[red] p-3 text-white ml-3.5"
+          >
+            Supprimer
           </button>
         </form>
       </div>
