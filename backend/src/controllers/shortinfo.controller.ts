@@ -41,6 +41,7 @@ export async function create(req: Request, res: Response) {
 export async function getAll(req: Request, res: Response) {
   try {
     const texts = await simpleTextModel.findAll({ attributes: ['itemKey'] });
+    console.log(texts);
     res.status(200).json(texts);
   } catch (error) {
     res.status(400).json({ error });

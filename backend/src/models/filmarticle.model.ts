@@ -22,7 +22,7 @@ const filmarticleModel = sq.define('filmarticle', {
     allowNull: false,
   },
   info: {
-    type: DataTypes.ARRAY(DataTypes.STRING),
+    type: DataTypes.STRING,
     allowNull: true,
   },
   synopsis: {

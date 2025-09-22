@@ -86,6 +86,7 @@ export async function getOnePublic(req: Request, res: Response) {
         url: decoded.url,
         article: decoded.article,
         images: decoded.images,
+        page: decoded.page,
       });
   } catch (error) {
     res.status(400).json(error);
@@ -107,6 +108,7 @@ export async function getOnePrivate(req: Request, res: Response) {
       url: decoded.url,
       article: decoded.article,
       images: decoded.images,
+      page: decoded.incoming ? 'avenir' : 'nosprojets',
     });
   } catch (error) {
     res.status(400).json(error);
@@ -201,6 +203,7 @@ export async function modifyOther(req: Request, res: Response) {
         await deleteOneImage(elem);
       }
     });
+    console.log(req.body);
     await filmarticleModel.update(
       {
         title,
@@ -216,6 +219,7 @@ export async function modifyOther(req: Request, res: Response) {
     );
     res.status(200).json({ message: 'Film article updated' });
   } catch (error) {
+    console.log(error);
     res.status(400).json({ error });
   }
 }

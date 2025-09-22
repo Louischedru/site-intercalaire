@@ -26,7 +26,7 @@ export default function SimpleImage({ itemKey, className }: Props) {
 
   return (
     <>
-      {isLogin && (
+      {isLogin && image && (
         <SimpleImagePopup
           itemKey={itemKey}
           image={image}
@@ -76,8 +76,16 @@ export function SimpleImagePopup({
 }) {
   const [loading, setLoading] = useState(false);
   const [currentData, setCurrentData] = useState<File>();
-  const [alt, setAlt] = useState('');
+  const [alt, setAlt] = useState(image?.alt || '');
   const [inputValue, setInputValue] = useState('');
+
+  useEffect(() => {
+    const altElement = document.getElementById(
+      `si-${itemKey}-alt`,
+    ) as HTMLTextAreaElement;
+
+    if (altElement) altElement.value = image?.alt || '';
+  }, [image, itemKey]);
 
   return active ? (
     <>
@@ -109,7 +117,7 @@ export function SimpleImagePopup({
             name="Texte alternatif"
             value={alt}
             onChange={e => setAlt(e.currentTarget.value)}
-            id={`${itemKey}-alt`}
+            id={`si-${itemKey}-alt`}
           />
           <SubmitInput disabled={loading} />
           <button
@@ -137,7 +145,7 @@ async function submitSimpleImage(
   setLoading(true);
 
   try {
-    console.log(await simpleImageCalls.modifyImage(itemKey, data));
+    if (data) console.log(await simpleImageCalls.modifyImage(itemKey, data));
     console.log(await simpleImageCalls.modifyAlt(itemKey, alt));
   } catch (error) {
     console.log(error);

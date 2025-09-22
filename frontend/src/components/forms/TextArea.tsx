@@ -24,8 +24,9 @@ export default function TextArea(props: Props) {
         onChange={props.onChange}
         id={props.id}
         onClick={() => console.log(props.value)}
+        value={newValue}
       >
-        {newValue}
+        {/* {newValue} */}
       </textarea>
     </div>
   );

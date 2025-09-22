@@ -1,23 +1,11 @@
-import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
-import SimpleImageFrom from '../../components/dev/SimpleImageFrom';
-import SimpleImagesList from '../../components/dev/SimpleImageList';
-import * as simpleTextCalls from '../../api-calls/SimpleText';
-import ShortInfoForm from '../../components/dev/ShortInfoForm';
+import * as simpleTextCalls from '../../api-calls/ShortInfo';
+import { FormEvent, ChangeEvent, useState, useEffect } from 'react';
 
-export default function DevInterface() {
+export default function ShortInfoForm() {
   return (
-    <div className="w-screen min-h-screen bg-black p-20 justify-center">
-      <div className="flex w-full justify-center mb-5">
-        <SimpleTextForm />
-        <SimpleTextsList />
-      </div>
-      <div className="flex w-full justify-center">
-        <SimpleImageFrom />
-        <SimpleImagesList />
-      </div>
-      <div>
-        <ShortInfoForm />
-      </div>
+    <div className="flex">
+      <SimpleTextForm />
+      <SimpleTextsList />
     </div>
   );
 }
@@ -97,6 +85,7 @@ async function getAllSimpleTexts(setTexts: (s: string[]) => void) {
   try {
     const response = (await simpleTextCalls.getAll()) as { itemKey: string }[];
     const items: string[] = [];
+    console.log(response);
     response.forEach(e => items.push(e.itemKey));
     setTexts(items);
   } catch (error) {

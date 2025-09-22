@@ -178,7 +178,7 @@ export default function CarouselModify() {
 
   return (
     <>
-      <div className="p-10">
+      <div className="p-10 ip-bg">
         <div className="flex justify-center pb-10">
           <div className="flex border border-[#bababa] w-1/3">
             <button

@@ -64,23 +64,30 @@ export function SimpleImagePopup({
 }) {
   const [loading, setLoading] = useState(false);
   const [currentData, setCurrentData] = useState<File>();
-  const [alt, setAlt] = useState('');
   const [inputValue, setInputValue] = useState('');
   const [image, setImage] =
     useState<simpleImageCalls.SimpleImageInterface | null>(null);
-
-  const getImage = async () => {
-    try {
-      const response = await simpleImageCalls.getOne(itemKey);
-      setImage(response);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const [alt, setAlt] = useState(image?.alt || '');
 
   useEffect(() => {
+    const getImage = async () => {
+      try {
+        const response = await simpleImageCalls.getOne(itemKey);
+        setImage(response);
+      } catch (error) {
+        console.log(error);
+      }
+    };
     getImage();
-  });
+  }, [itemKey]);
+
+  useEffect(() => {
+    const altElement = document.getElementById(
+      `si-${itemKey}-alt`,
+    ) as HTMLTextAreaElement;
+    if (altElement) altElement.value = image?.alt || '';
+    console.log('TEST', altElement);
+  }, [image, itemKey, active]);
 
   return active ? (
     <>
@@ -112,7 +119,7 @@ export function SimpleImagePopup({
             name="Texte alternatif"
             value={alt}
             onChange={e => setAlt(e.currentTarget.value)}
-            id={`${itemKey}-alt`}
+            id={`si-${itemKey}-alt`}
           />
           <SubmitInput disabled={loading} />
           <button
@@ -140,7 +147,7 @@ async function submitSimpleImage(
   setLoading(true);
 
   try {
-    console.log(await simpleImageCalls.modifyImage(itemKey, data));
+    if (data) console.log(await simpleImageCalls.modifyImage(itemKey, data));
     console.log(await simpleImageCalls.modifyAlt(itemKey, alt));
   } catch (error) {
     console.log(error);
