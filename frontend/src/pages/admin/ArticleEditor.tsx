@@ -5,6 +5,7 @@ import TextInput from '../../components/forms/TextInput';
 import TextArea from '../../components/forms/TextArea';
 import FileInput from '../../components/forms/FileInput';
 import SubmitInput from '../../components/forms/SubmitInput';
+import TextEditor from '../../components/article-editor/TextEditor';
 
 export default function ArticleEditor() {
   const [searchParams] = useSearchParams();
@@ -20,6 +21,7 @@ export default function ArticleEditor() {
   const [images, setImages] = useState('');
   const [page, setPage] = useState('');
 
+  const [isReady, setIsReady] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [currentData, setCurrentData] = useState<File>();
   const id = searchParams.get('id');
@@ -105,6 +107,7 @@ export default function ArticleEditor() {
         infoInput.value = response.info;
         synopsisInput.value = response.synopsis;
         urlInput.value = response.url;
+        setIsReady(true);
       } catch (error) {
         console.log(error);
       }
@@ -117,7 +120,7 @@ export default function ArticleEditor() {
     <div className="bg-white p-10">
       <form
         action=""
-        className="px-20 flex flex-col gap-5"
+        className="px-20 flex flex-col gap-5 mb-5"
         onSubmit={e => {
           e.preventDefault();
           const doStuff = async () => {
@@ -182,13 +185,16 @@ export default function ArticleEditor() {
           }}
         />
         <SubmitInput />
+      </form>
+      {isReady && <TextEditor article={article} setArticle={setArticle} />}{' '}
+      <div className="flex justify-center">
         <button
-          className="bg-[#e42c2c] p-3 mt-3 text-white"
+          className="bg-[#e42c2c] p-3 mt-3 text-white text-center"
           onClick={() => deleteArticle()}
         >
           Supprimer 'article
         </button>
-      </form>
+      </div>
     </div>
   );
 }
