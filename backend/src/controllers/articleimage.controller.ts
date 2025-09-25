@@ -82,3 +82,38 @@ export async function deleteOne(req: Request, res: Response) {
     res.status(400).json(error);
   }
 }
+
+export async function modifyImage(req: Request, res: Response) {
+  const { id } = req.params;
+  const { buffer, originalname } = req.file || {
+    buffer: undefined,
+    originalname: undefined,
+  };
+  const timestamp = new Date().toString();
+  const ref = `ai-${timestamp.split(' ').join('_')}-${originalname?.split(' ').join('_')}.webp`;
+
+  fs.access('files', error => {
+    if (error) fs.mkdirSync('files');
+  });
+  fs.access(filePath, error => {
+    if (error) fs.mkdirSync(filePath);
+  });
+
+  try {
+    const item = await articleimageModel.findByPk(id);
+    if (!item) throw 'Not found';
+    if (!buffer) throw 'No file provided';
+    const decoded = item.toJSON();
+    await sharp(buffer).webp({ quality: 20 }).toFile(path.join(filePath, ref));
+
+    fs.unlink(path.join(filePath, decoded.path), error => {
+      if (error) console.log(error);
+    });
+
+    await articleimageModel.update({ path: ref }, { where: { id } });
+
+    res.status(200).json({ message: 'Article image updated' });
+  } catch (error) {
+    res.status(400).json({ error });
+  }
+}

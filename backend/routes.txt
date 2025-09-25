@@ -164,9 +164,13 @@ POST /api/articleimage/
 body: {} file: "file"
 response: 200 {id}
 
-PUT /api/articleimage/:id
+PUT /api/articleimage/alt/:id
 body: {alt}
 response: 200 (message)
+
+PUT /api/articleimage/image/:id
+body: {} file: "file"
+response: 200 {message}
 
 DELETE /api/articleimage/:id
 body: {}

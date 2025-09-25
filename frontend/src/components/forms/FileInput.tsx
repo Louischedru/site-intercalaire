@@ -17,7 +17,7 @@ export default function FileInput(props: Props) {
     <div className="">
       <div className="flex justify-center">
         <label
-          htmlFor={props.name}
+          htmlFor={props.id}
           className="inline-block font-bold mb-3 text-white bg-ip-blue p-2 cursor-pointer text-center"
         >
           <FontAwesomeIcon icon={faPlus} /> Impoter une image
@@ -27,7 +27,7 @@ export default function FileInput(props: Props) {
           name={props.name}
           type="file"
           onChange={props.onChange}
-          id={props.name}
+          id={props.id}
           value={props.value}
         />
       </div>

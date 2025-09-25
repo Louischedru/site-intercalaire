@@ -11,7 +11,13 @@ const articleimageRouter = Router();
 
 articleimageRouter.get('/:id', controller.getOne);
 articleimageRouter.post('/', auth, upload.single('file'), controller.create);
-articleimageRouter.put('/:id', auth, controller.modifyAlt);
+articleimageRouter.put('/alt/:id', auth, controller.modifyAlt);
+articleimageRouter.put(
+  '/image/:id',
+  auth,
+  upload.single('file'),
+  controller.modifyImage,
+);
 articleimageRouter.delete('/:id', auth, controller.deleteOne);
 
 export default articleimageRouter;

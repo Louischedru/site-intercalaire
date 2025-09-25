@@ -1,5 +1,7 @@
 import EditorJS from '@editorjs/editorjs';
 import { useEffect, useRef } from 'react';
+import Image from '../../ejs-blocks/Image/Image';
+import Header from '../../ejs-blocks/Header/Header';
 
 interface Props {
   article: string;
@@ -22,14 +24,24 @@ export default function TextEditor(props: Props) {
           const data = await editorRef.current.save();
           props.setArticle(JSON.stringify(data));
         },
-        data: JSON.parse(props.article),
+        data: props.article != '' && JSON.parse(props.article),
+        tools: {
+          image: {
+            class: Image,
+            inlineToolbar: true,
+          },
+          header: {
+            class: Header,
+            inlineToolbar: true,
+          },
+        },
       });
       isReady.current = true;
     }
   });
 
   return (
-    <div className="bg-black text-white">
+    <div className="">
       <div id="editor-js" className=""></div>
     </div>
   );
