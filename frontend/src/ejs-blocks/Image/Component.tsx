@@ -41,8 +41,10 @@ export default function COmponent(props: Props) {
     try {
       const response = await articleImageCalls.modifyAlt(elementId, alt);
       console.log(response);
+      alert('Modification réussie');
     } catch (error) {
       console.log(error);
+      alert("Une erreur s'est produite");
     }
   };
 
@@ -62,8 +64,10 @@ export default function COmponent(props: Props) {
       props.updateId(data.id);
       setId(data.id);
       await modifyAlt(data.id);
+      alert('Image importée abev succès');
     } catch (error) {
       console.log(error);
+      alert("Une erreur s'est produite");
     }
   };
 

@@ -132,7 +132,7 @@ response: 200 {poster, title, desc, article, images, synopsis?, info?, url?}
 
 GET /api/filmarticle/oneprivate/:id
 body: {}
-response: 200 {poster, title, desc, article, images, page, synopsis?, info?, url?}
+response: 200 {poster, title, desc, article, images, page, published, synopsis?, info?, url?}
 
 POST /api/filmarticle/
 body: {title, desc, article, page, synopsis?, info?, url?, images?}

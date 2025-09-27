@@ -1,5 +1,6 @@
 import { createRoot } from 'react-dom/client';
 import Component from './Component';
+import * as articleImageCalls from '../../api-calls/ArticleImage';
 
 class BlockId {
   static id = 0;
@@ -45,7 +46,13 @@ export default class Image {
     return { id: this.id };
   }
 
-  removed() {
-    console.log('BLOCK DELETED');
+  async removed() {
+    if (this.id < 0) return;
+    try {
+      const response = await articleImageCalls.deleteOne(this.id);
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
   }
 }

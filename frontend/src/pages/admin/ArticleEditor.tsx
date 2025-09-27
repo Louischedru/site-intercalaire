@@ -20,6 +20,7 @@ export default function ArticleEditor() {
   const [article, setArticle] = useState('');
   const [images, setImages] = useState('');
   const [page, setPage] = useState('');
+  const [isPublished, setIsPublished] = useState(false);
 
   const [isReady, setIsReady] = useState(false);
   const [inputValue, setInputValue] = useState('');
@@ -40,9 +41,11 @@ export default function ArticleEditor() {
         page,
       });
 
+      alert('Article mis à jour');
       console.log(response);
     } catch (error) {
       console.log(error);
+      alert("Une erreur s'est produite");
     }
   };
 
@@ -69,6 +72,21 @@ export default function ArticleEditor() {
     }
   };
 
+  const togglePublished = async () => {
+    if (!id) return;
+    try {
+      const response = await filmArticleCalls.setPublished(
+        parseInt(id),
+        !isPublished,
+      );
+      alert(isPublished ? 'rticle dépublié' : 'Article publié');
+      setIsPublished(!isPublished);
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     const getItem = async () => {
       try {
@@ -85,6 +103,7 @@ export default function ArticleEditor() {
         setImages(response.images);
         setArticle(response.article);
         setPage(response.page);
+        setIsPublished(response.published);
 
         const titleInput = document.getElementById(
           'article-title',
@@ -184,15 +203,24 @@ export default function ArticleEditor() {
             setUrl(e.currentTarget.value);
           }}
         />
+        {isReady && <TextEditor article={article} setArticle={setArticle} />}{' '}
         <SubmitInput />
       </form>
-      {isReady && <TextEditor article={article} setArticle={setArticle} />}{' '}
       <div className="flex justify-center">
+        <button
+          className="bg-[#0aba3c] p-3 mt-3 text-white text-center"
+          onClick={() => togglePublished()}
+        >
+          {isPublished ? 'Dépublier' : 'Publier'}
+        </button>
+      </div>
+
+      <div className="flex justify-center mt-5">
         <button
           className="bg-[#e42c2c] p-3 mt-3 text-white text-center"
           onClick={() => deleteArticle()}
         >
-          Supprimer 'article
+          Supprimer l'article
         </button>
       </div>
     </div>

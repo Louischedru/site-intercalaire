@@ -6,6 +6,8 @@ import SubmitInput from '../../components/forms/SubmitInput';
 import * as filmArticleCalls from '../../api-calls/FilmArticle';
 import { Link, useNavigate } from 'react-router-dom';
 
+let key = 0;
+
 export default function AdminFIlmArticle() {
   const [active, setActive] = useState(false);
 
@@ -32,19 +34,28 @@ function ArticleList() {
   const [items, setItems] =
     useState<filmArticleCalls.shortFilmArticleInterface[]>();
 
-  const getItems = async () => {
-    try {
-      const response = await filmArticleCalls.getDrafts(page);
-      console.log(response);
-      setItems(response);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   useEffect(() => {
+    const getItems = async () => {
+      try {
+        const response = (await filmArticleCalls.getDrafts(
+          page,
+        )) as filmArticleCalls.shortFilmArticleInterface[];
+        const response2 = (await filmArticleCalls.getPublished(
+          page,
+        )) as filmArticleCalls.shortFilmArticleInterface[];
+        const list = [] as filmArticleCalls.shortFilmArticleInterface[];
+
+        response.forEach(i => list.push(i));
+        response2.forEach(i => list.push(i));
+        console.log(response);
+        setItems(list);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
     getItems();
-  });
+  }, [page]);
 
   return (
     <div>
@@ -54,7 +65,6 @@ function ArticleList() {
           className="bg-[#ffffff] text-black p-3 disabled:bg-[#3367ba] disabled:text-white"
           onClick={() => {
             setPage('nosprojets');
-            getItems();
           }}
         >
           Nos projets
@@ -64,7 +74,6 @@ function ArticleList() {
           className="bg-[#ffffff] text-black p-3 disabled:bg-[#3367ba] disabled:text-white"
           onClick={() => {
             setPage('avenir');
-            getItems();
           }}
         >
           A venir
@@ -72,8 +81,12 @@ function ArticleList() {
       </div>
       <div>
         {items?.map(i => {
+          key++;
           return (
-            <Link to={`/admin/article-editor?id=${i.id}`}>
+            <Link
+              to={`/admin/article-editor?id=${i.id}`}
+              key={`filmarticle-${key}`}
+            >
               <div className="cursor-pointer p-5 hover:underline text-xl text-center">
                 {i.title}
               </div>

@@ -109,6 +109,7 @@ export async function getOnePrivate(req: Request, res: Response) {
       article: decoded.article,
       images: decoded.images,
       page: decoded.incoming ? 'avenir' : 'nosprojets',
+      published: decoded.published,
     });
   } catch (error) {
     res.status(400).json(error);
