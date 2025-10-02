@@ -11,6 +11,7 @@ import EditConcours from './pages/admin/EditConcours';
 import Captations from './pages/Captations';
 import AdminFIlmArticle from './pages/admin/AdminFilmArticle';
 import ArticleEditor from './pages/admin/ArticleEditor';
+import Projet from './pages/Projet';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/nos-projets" element={<NosProjets />} />
           <Route path="/captations" element={<Captations />} />
+          <Route path="/projet" element={<Projet />} />
         </Route>
         <Route element={<AdminLayout />} path="/admin">
           <Route path="/admin/dev" element={<DevInterface />} />

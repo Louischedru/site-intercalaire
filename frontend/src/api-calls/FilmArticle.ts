@@ -3,6 +3,7 @@ import { fetchAPI, fetchAPIFormData } from '../utils';
 export interface shortFilmArticleInterface {
   poster: string;
   title: string;
+  desc: string;
   id: number;
 }
 

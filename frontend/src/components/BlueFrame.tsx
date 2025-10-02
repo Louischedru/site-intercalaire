@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 
 export default function BlueFrame(props: {
   children: ReactNode;
+  color?: string;
   className?: string;
 }) {
   return (
@@ -10,6 +11,7 @@ export default function BlueFrame(props: {
       style={{
         borderTopLeftRadius: '3rem',
         borderBottomRightRadius: '3rem',
+        backgroundColor: props.color,
       }}
     >
       {props.children}
