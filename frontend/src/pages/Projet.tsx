@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import * as filmArticleCalls from '../api-calls/FilmArticle';
 import Head from '../components/projet/Head';
+import Article from '../components/projet/Article';
 
 export default function Projet() {
   const [params] = useSearchParams();
@@ -24,6 +25,7 @@ export default function Projet() {
   return (
     <div>
       <Head element={element} />
+      <Article element={element} />
     </div>
   );
 }

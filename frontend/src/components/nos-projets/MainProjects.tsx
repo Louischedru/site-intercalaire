@@ -99,7 +99,7 @@ function ProjectElement({
               }}
             />
           </div>
-          <div className="p-7 text-white lg:w-1/2 lg:p-14 lg:max-h-full lg:p-0 lg:px-7">
+          <div className="p-7 text-white lg:w-1/2 lg:max-h-full lg:p-0 lg:px-7">
             <h2 className="gobold text-2xl max-lg:text-center mb-5 lg:text-3xl xl:text-4xl">
               {element.title}
             </h2>

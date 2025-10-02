@@ -1,5 +1,10 @@
 import { fetchAPI, fetchAPIFormData } from '../utils';
 
+export interface articleImageInterface {
+  url: string;
+  alt: string;
+}
+
 export async function getOne(id: number) {
   const response = await fetchAPI({
     route: `/articleimage/${id}`,
