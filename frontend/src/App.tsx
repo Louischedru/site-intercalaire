@@ -12,6 +12,8 @@ import Captations from './pages/Captations';
 import AdminFIlmArticle from './pages/admin/AdminFilmArticle';
 import ArticleEditor from './pages/admin/ArticleEditor';
 import Projet from './pages/Projet';
+import AVenir from './pages/AVenir';
+import Contact from './pages/Contact';
 
 function App() {
   return (
@@ -22,6 +24,8 @@ function App() {
           <Route path="/nos-projets" element={<NosProjets />} />
           <Route path="/captations" element={<Captations />} />
           <Route path="/projet" element={<Projet />} />
+          <Route path="/a-venir" element={<AVenir />} />
+          <Route path="/contact" element={<Contact />} />
         </Route>
         <Route element={<AdminLayout />} path="/admin">
           <Route path="/admin/dev" element={<DevInterface />} />

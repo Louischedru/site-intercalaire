@@ -13,13 +13,9 @@ export default function HomeNav() {
       <Rubric
         name="Captations"
         itemKey="page-headers.captations"
-        page="nos-projets"
+        page="captations"
       />
-      <Rubric
-        name="à venir"
-        itemKey="page-headers.a-venir"
-        page="nos-projets"
-      />
+      <Rubric name="à venir" itemKey="page-headers.a-venir" page="a-venir" />
     </div>
   );
 }

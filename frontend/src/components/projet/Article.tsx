@@ -17,14 +17,18 @@ export default function Article({
 
   return (
     <div className="ip-bg">
-      <div className="flex flex-col gap-2 p-2">
+      <div className="flex flex-col gap-2 p-2 md:p-6 lg:p-16 lg:gap-4 xl:px-24">
         {article?.blocks.map(i => {
           if (i.type == 'paragraph') {
             return <p className="bg-white p-3">{parseer(i.data.text)}</p>;
           }
           if (i.type == 'header') {
             return (
-              <h2 className="gobold p-3 text-2xl bg-white">{i.data.text}</h2>
+              <div className="flex">
+                <h2 className="gobold p-3 text-2xl bg-white inline">
+                  {i.data.text}
+                </h2>
+              </div>
             );
           }
           if (i.type == 'image') {
@@ -53,7 +57,7 @@ function Image({ id }: { id: number }) {
   });
 
   return (
-    <div>
+    <div className="lg:px-10 xl:px-24">
       <img src={item?.url} alt={item?.alt} />
     </div>
   );

@@ -19,7 +19,7 @@ export default function Header() {
         ? 'page-headers.nos-projets'
         : location.pathname == '/captations'
           ? 'page-headers.captations'
-          : location.pathname == 'a-venir'
+          : location.pathname == '/a-venir'
             ? 'page-headers.a-venir'
             : null;
 
@@ -37,6 +37,7 @@ export default function Header() {
     else setBgImage(null);
 
     setIsHome(location.pathname == '/');
+    window.scroll(0, 0);
   }, [location]);
 
   useEffect(() => {
