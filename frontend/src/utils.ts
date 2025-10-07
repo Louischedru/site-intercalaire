@@ -2,6 +2,7 @@ import Cookies from 'js-cookie';
 import axios from 'axios';
 
 const APIURL = 'http://192.168.1.12:8080/api/';
+// const APIURL = "http://intercalaireproductions.fr"
 
 export const screenSizes = {
   sm: 640,
