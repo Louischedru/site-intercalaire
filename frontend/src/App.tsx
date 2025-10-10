@@ -14,6 +14,7 @@ import ArticleEditor from './pages/admin/ArticleEditor';
 import Projet from './pages/Projet';
 import AVenir from './pages/AVenir';
 import Contact from './pages/Contact';
+import MentionsLegales from './pages/MentionsLegales';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
           <Route path="/projet" element={<Projet />} />
           <Route path="/a-venir" element={<AVenir />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/mentions-legales" element={<MentionsLegales />} />
         </Route>
         <Route element={<AdminLayout />} path="/admin">
           <Route path="/admin/dev" element={<DevInterface />} />

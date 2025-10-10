@@ -57,7 +57,7 @@ export default function Footer() {
           </a>
         </div>
         <div className="">
-          <Link to={'/'} className="font-bold hover:underline">
+          <Link to={'/mentions-legales'} className="font-bold hover:underline">
             Mentions légales
           </Link>
         </div>

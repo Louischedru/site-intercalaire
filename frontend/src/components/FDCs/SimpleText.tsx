@@ -17,6 +17,12 @@ const mdComponents: Components = {
       </a>
     );
   },
+  h1({ children }) {
+    return <h1 className="gobold text-3xl mb-3 text-center">{children}</h1>;
+  },
+  h2({ children }) {
+    return <h2 className="font-black text-2xl mb-2">{children}</h2>;
+  },
 };
 
 export default function SimpleText({ itemKey }: { itemKey: string }) {
