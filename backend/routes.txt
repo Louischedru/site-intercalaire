@@ -175,3 +175,11 @@ response: 200 {message}
 DELETE /api/articleimage/:id
 body: {}
 response: 200 {message}
+
+
+========== /api/mail
+
+POST /api/mail
+body: {name, firstname, email, subject, message}
+response: 200 {message}
+
