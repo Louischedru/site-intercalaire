@@ -14,7 +14,7 @@ export default function AdminFIlmArticle() {
   return (
     <>
       {active && <CreateArticleForm setActive={setActive} />}
-      <div className="bg-white p-5">
+      <div className="bg-white p-5 min-h-screen">
         <div className="flex justify-center">
           <button
             className="bg-[#3076cb] text-white p-3"

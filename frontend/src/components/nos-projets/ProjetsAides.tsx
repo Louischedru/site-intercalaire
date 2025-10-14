@@ -2,6 +2,8 @@ import Carousel from 'react-multi-carousel';
 import Title from '../Title';
 import * as carouselCalls from '../../api-calls/Carousel';
 import { useEffect, useState } from 'react';
+import { loginTest } from '../../utils';
+import { Link } from 'react-router-dom';
 
 const responsive = {
   superLargeDesktop: {
@@ -27,6 +29,8 @@ export default function ProjetsAIdes() {
     carouselCalls.CarouselInterface[] | null
   >(null);
 
+  const [isLogin, setIsLogin] = useState(false);
+
   useEffect(() => {
     const getElements = async () => {
       try {
@@ -39,6 +43,7 @@ export default function ProjetsAIdes() {
     };
 
     getElements();
+    loginTest(setIsLogin);
   }, []);
 
   return (
@@ -55,6 +60,16 @@ export default function ProjetsAIdes() {
           })}
         </Carousel>
       )}{' '}
+      {isLogin && (
+        <div className="w-full">
+          <Link
+            className="text-center w-full block font-semibold hover:underline p-3"
+            to={'/admin/carousel'}
+          >
+            Modifier les diaporamas
+          </Link>
+        </div>
+      )}
     </div>
   );
 }

@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import * as carousel from '../../api-calls/Carousel';
 import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
-import { screenSizes } from '../../utils';
+import { loginTest, screenSizes } from '../../utils';
+import { Link } from 'react-router-dom';
 
 let key = 0;
 
@@ -27,6 +28,8 @@ const responsive = {
 
 export default function HomeCarousel() {
   const [elements, setElements] = useState<carousel.CarouselInterface[]>();
+  const [isLogin, setIsLogin] = useState(false);
+
   const getCarousel = async () => {
     try {
       setElements(await carousel.getOne('home'));
@@ -37,6 +40,7 @@ export default function HomeCarousel() {
 
   useEffect(() => {
     getCarousel();
+    loginTest(setIsLogin);
   }, []);
 
   return (
@@ -56,6 +60,16 @@ export default function HomeCarousel() {
           })}
         </Carousel>
       )}{' '}
+      {isLogin && (
+        <div className="w-full">
+          <Link
+            className="text-center w-full block font-semibold hover:underline p-3"
+            to={'/admin/carousel'}
+          >
+            Modifier les diaporamas
+          </Link>
+        </div>
+      )}
     </div>
   );
 }
@@ -89,17 +103,21 @@ function Slide({ image }: { image: carousel.CarouselInterface }) {
             alt={image.alt}
             className="block m-auto max-h-56 md:max-h-80"
           />
-          <p className="bg-white leading-4 text-black p-2 max-h-32 md:max-h-48 md:leading-snug">
-            {image.desc}
-          </p>
-          <div className="m-auto">
-            <a
-              href={image.url}
-              className="bg-white p-1 hover:underline text-center inline-block m-auto"
-            >
-              En savoir plus
-            </a>
-          </div>
+          {image.desc && image.desc.length > 0 && (
+            <p className="bg-white leading-4 text-black p-2 max-h-32 md:max-h-48 md:leading-snug">
+              {image.desc}
+            </p>
+          )}
+          {image.url && image.url.length > 0 && (
+            <div className="m-auto">
+              <a
+                href={image.url}
+                className="bg-white p-1 hover:underline text-center inline-block m-auto"
+              >
+                En savoir plus
+              </a>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -128,17 +146,21 @@ function SlideLarge({ image }: { image: carousel.CarouselInterface }) {
                 {image.title}
               </h1>
             </div>
-            <p className="bg-white text-black p-3 mb-5 max-h-52">
-              {image.desc}
-            </p>
-            <div className="m-auto">
-              <a
-                href={image.url}
-                className="bg-white p-1 hover:underline text-center inline-block m-auto"
-              >
-                En savoir plus
-              </a>
-            </div>
+            {image.desc && image.desc.length > 0 && (
+              <p className="bg-white text-black p-3 mb-5 max-h-52">
+                {image.desc}
+              </p>
+            )}{' '}
+            {image.url && image.url.length > 0 && (
+              <div className="m-auto">
+                <a
+                  href={image.url}
+                  className="bg-white p-1 hover:underline text-center inline-block m-auto"
+                >
+                  En savoir plus
+                </a>
+              </div>
+            )}{' '}
           </div>
           <div className="w-1/2">
             <img

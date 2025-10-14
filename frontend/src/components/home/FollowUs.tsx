@@ -46,12 +46,15 @@ function SocialMedia(props: {
   url: string;
 }) {
   return (
-    <a className="w-5/12 text-center block md:w-1/4 lg:w-1/6" href={props.url}>
+    <a
+      className="w-5/12 text-center block cursor-pointer hover:bg-black hover:bg-opacity-20 py-5 md:w-1/4 lg:w-1/6"
+      href={props.url}
+    >
       <div className="flex m-auto justify-center border-4 rounded-full aspect-square items-center w-11/12 mb-4 md:w-10/12 lg:w-11/12 xl:w-9/12 2xl:w-8/12">
         {props.icon}
       </div>
       <div className="font-extrabold">{props.name}</div>
-      <div>{props.desc}</div>
+      <div className="px-2">{props.desc}</div>
     </a>
   );
 }

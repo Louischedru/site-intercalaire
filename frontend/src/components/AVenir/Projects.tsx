@@ -3,12 +3,15 @@ import Title from '../Title';
 import * as filmArticleCalls from '../../api-calls/FilmArticle';
 import BlueFrame from '../BlueFrame';
 import { Link } from 'react-router-dom';
+import { loginTest } from '../../utils';
 
 let key = 0;
 
 export default function IncomingProjects() {
   const [items, setItems] =
     useState<filmArticleCalls.fullFilmArticleInterface[]>();
+
+  const [isLogin, setIsLogin] = useState(false);
 
   useEffect(() => {
     const doStuff = async () => {
@@ -20,11 +23,18 @@ export default function IncomingProjects() {
       }
     };
     doStuff();
+    loginTest(setIsLogin);
   }, []);
 
   return (
     <div className="">
       <Title name="Nos films" />
+      {isLogin && (
+        <div className="text-center font-extrabold p-5 hover:underline">
+          <Link to={'/admin/film-articles'}>Modifier les éléments</Link>
+        </div>
+      )}
+
       <div className="px-4 flex flex-col gap-8 md:px-20 lg:px-20">
         {items?.map(i => {
           key++;
